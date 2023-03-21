@@ -1,0 +1,16 @@
+info
+analysis-of-prometheus-stability-ph-data
+data-import
+pre-plots-and-analysis
+supplementary-nanodsf-plots
+lineplot-comparison-different-ph-values
+boxplot-of-differences
+columnplot-of-t-differences
+lineplot-concentration-series
+final-figures-nanodsf
+main
+espc-analysis-of-nanodsf-titration-data
+export-data-for-comparison
+analysis-of-immunoprecipitation-data
+ip-plots
+ip-stats

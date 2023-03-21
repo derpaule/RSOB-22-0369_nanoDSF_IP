@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>nanoDSF and IP data of G3BP1-NTF2 binding to Caprin-1 and USP10</title>
+  <meta name="description" content="Analysis and visualization of nanoDSF and IP" />
+  <meta name="generator" content="bookdown 0.29 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="nanoDSF and IP data of G3BP1-NTF2 binding to Caprin-1 and USP10" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="Analysis and visualization of nanoDSF and IP" />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="nanoDSF and IP data of G3BP1-NTF2 binding to Caprin-1 and USP10" />
+  
+  <meta name="twitter:description" content="Analysis and visualization of nanoDSF and IP" />
+  
+
+<meta name="author" content="[Tim Schulte]" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<script src="libs/accessible-code-block-0.0.1/empty-anchor.js"></script>
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+<script>
+/* ========================================================================
+ * Bootstrap: transition.js v3.3.7
+ * http://getbootstrap.com/javascript/#transitions
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // CSS TRANSITION SUPPORT (Shoutout: http://www.modernizr.com/)
+  // ============================================================
+
+  function transitionEnd() {
+    var el = document.createElement('bootstrap')
+
+    var transEndEventNames = {
+      WebkitTransition : 'webkitTransitionEnd',
+      MozTransition    : 'transitionend',
+      OTransition      : 'oTransitionEnd otransitionend',
+      transition       : 'transitionend'
+    }
+
+    for (var name in transEndEventNames) {
+      if (el.style[name] !== undefined) {
+        return { end: transEndEventNames[name] }
+      }
+    }
+
+    return false // explicit for ie8 (  ._.)
+  }
+
+  // http://blog.alexmaccaw.com/css-transitions
+  $.fn.emulateTransitionEnd = function (duration) {
+    var called = false
+    var $el = this
+    $(this).one('bsTransitionEnd', function () { called = true })
+    var callback = function () { if (!called) $($el).trigger($.support.transition.end) }
+    setTimeout(callback, duration)
+    return this
+  }
+
+  $(function () {
+    $.support.transition = transitionEnd()
+
+    if (!$.support.transition) return
+
+    $.event.special.bsTransitionEnd = {
+      bindType: $.support.transition.end,
+      delegateType: $.support.transition.end,
+      handle: function (e) {
+        if ($(e.target).is(this)) return e.handleObj.handler.apply(this, arguments)
+      }
+    }
+  })
+
+}(jQuery);
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: collapse.js v3.3.7
+ * http://getbootstrap.com/javascript/#collapse
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+/* jshint latedef: false */
+
++function ($) {
+  'use strict';
+
+  // COLLAPSE PUBLIC CLASS DEFINITION
+  // ================================
+
+  var Collapse = function (element, options) {
+    this.$element      = $(element)
+    this.options       = $.extend({}, Collapse.DEFAULTS, options)
+    this.$trigger      = $('[data-toggle="collapse"][href="#' + element.id + '"],' +
+                           '[data-toggle="collapse"][data-target="#' + element.id + '"]')
+    this.transitioning = null
+
+    if (this.options.parent) {
+      this.$parent = this.getParent()
+    } else {
+      this.addAriaAndCollapsedClass(this.$element, this.$trigger)
+    }
+
+    if (this.options.toggle) this.toggle()
+  }
+
+  Collapse.VERSION  = '3.3.7'
+
+  Collapse.TRANSITION_DURATION = 350
+
+  Collapse.DEFAULTS = {
+    toggle: true
+  }
+
+  Collapse.prototype.dimension = function () {
+    var hasWidth = this.$element.hasClass('width')
+    return hasWidth ? 'width' : 'height'
+  }
+
+  Collapse.prototype.show = function () {
+    if (this.transitioning || this.$element.hasClass('in')) return
+
+    var activesData
+    var actives = this.$parent && this.$parent.children('.panel').children('.in, .collapsing')
+
+    if (actives && actives.length) {
+      activesData = actives.data('bs.collapse')
+      if (activesData && activesData.transitioning) return
+    }
+
+    var startEvent = $.Event('show.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    if (actives && actives.length) {
+      Plugin.call(actives, 'hide')
+      activesData || actives.data('bs.collapse', null)
+    }
+
+    var dimension = this.dimension()
+
+    this.$element
+      .removeClass('collapse')
+      .addClass('collapsing')[dimension](0)
+      .attr('aria-expanded', true)
+
+    this.$trigger
+      .removeClass('collapsed')
+      .attr('aria-expanded', true)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse in')[dimension]('')
+      this.transitioning = 0
+      this.$element
+        .trigger('shown.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    var scrollSize = $.camelCase(['scroll', dimension].join('-'))
+
+    this.$element
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)[dimension](this.$element[0][scrollSize])
+  }
+
+  Collapse.prototype.hide = function () {
+    if (this.transitioning || !this.$element.hasClass('in')) return
+
+    var startEvent = $.Event('hide.bs.collapse')
+    this.$element.trigger(startEvent)
+    if (startEvent.isDefaultPrevented()) return
+
+    var dimension = this.dimension()
+
+    this.$element[dimension](this.$element[dimension]())[0].offsetHeight
+
+    this.$element
+      .addClass('collapsing')
+      .removeClass('collapse in')
+      .attr('aria-expanded', false)
+
+    this.$trigger
+      .addClass('collapsed')
+      .attr('aria-expanded', false)
+
+    this.transitioning = 1
+
+    var complete = function () {
+      this.transitioning = 0
+      this.$element
+        .removeClass('collapsing')
+        .addClass('collapse')
+        .trigger('hidden.bs.collapse')
+    }
+
+    if (!$.support.transition) return complete.call(this)
+
+    this.$element
+      [dimension](0)
+      .one('bsTransitionEnd', $.proxy(complete, this))
+      .emulateTransitionEnd(Collapse.TRANSITION_DURATION)
+  }
+
+  Collapse.prototype.toggle = function () {
+    this[this.$element.hasClass('in') ? 'hide' : 'show']()
+  }
+
+  Collapse.prototype.getParent = function () {
+    return $(this.options.parent)
+      .find('[data-toggle="collapse"][data-parent="' + this.options.parent + '"]')
+      .each($.proxy(function (i, element) {
+        var $element = $(element)
+        this.addAriaAndCollapsedClass(getTargetFromTrigger($element), $element)
+      }, this))
+      .end()
+  }
+
+  Collapse.prototype.addAriaAndCollapsedClass = function ($element, $trigger) {
+    var isOpen = $element.hasClass('in')
+
+    $element.attr('aria-expanded', isOpen)
+    $trigger
+      .toggleClass('collapsed', !isOpen)
+      .attr('aria-expanded', isOpen)
+  }
+
+  function getTargetFromTrigger($trigger) {
+    var href
+    var target = $trigger.attr('data-target')
+      || (href = $trigger.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') // strip for ie7
+
+    return $(target)
+  }
+
+
+  // COLLAPSE PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this   = $(this)
+      var data    = $this.data('bs.collapse')
+      var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
+
+      if (!data && options.toggle && /show|hide/.test(option)) options.toggle = false
+      if (!data) $this.data('bs.collapse', (data = new Collapse(this, options)))
+      if (typeof option == 'string') data[option]()
+    })
+  }
+
+  var old = $.fn.collapse
+
+  $.fn.collapse             = Plugin
+  $.fn.collapse.Constructor = Collapse
+
+
+  // COLLAPSE NO CONFLICT
+  // ====================
+
+  $.fn.collapse.noConflict = function () {
+    $.fn.collapse = old
+    return this
+  }
+
+
+  // COLLAPSE DATA-API
+  // =================
+
+  $(document).on('click.bs.collapse.data-api', '[data-toggle="collapse"]', function (e) {
+    var $this   = $(this)
+
+    if (!$this.attr('data-target')) e.preventDefault()
+
+    var $target = getTargetFromTrigger($this)
+    var data    = $target.data('bs.collapse')
+    var option  = data ? 'toggle' : $this.data()
+
+    Plugin.call($target, option)
+  })
+
+}(jQuery);
+</script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    // close the dropdown menu when an option is clicked
+    $("#allCodeButton").dropdown("toggle");
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    // close the dropdown menu when an option is clicked
+    $("#allCodeButton").dropdown("toggle");
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.sourceCode, pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan');
+  rCodeBlocks.each(function() {
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    if (show)
+      div.addClass('in');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (show ? 'Hide' : 'Code') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs code-folding-btn pull-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-target', '#' + id)
+        .attr('aria-expanded', show)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // update state of button on show/hide
+    div.on('hidden.bs.collapse', function () {
+      showCodeText.text('Code');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+    });
+  });
+
+}
+</script>
+<script>
+/* ========================================================================
+ * Bootstrap: dropdown.js v3.3.7
+ * http://getbootstrap.com/javascript/#dropdowns
+ * ========================================================================
+ * Copyright 2011-2016 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * ======================================================================== */
+
+
++function ($) {
+  'use strict';
+
+  // DROPDOWN CLASS DEFINITION
+  // =========================
+
+  var backdrop = '.dropdown-backdrop'
+  var toggle   = '[data-toggle="dropdown"]'
+  var Dropdown = function (element) {
+    $(element).on('click.bs.dropdown', this.toggle)
+  }
+
+  Dropdown.VERSION = '3.3.7'
+
+  function getParent($this) {
+    var selector = $this.attr('data-target')
+
+    if (!selector) {
+      selector = $this.attr('href')
+      selector = selector && /#[A-Za-z]/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') // strip for ie7
+    }
+
+    var $parent = selector && $(selector)
+
+    return $parent && $parent.length ? $parent : $this.parent()
+  }
+
+  function clearMenus(e) {
+    if (e && e.which === 3) return
+    $(backdrop).remove()
+    $(toggle).each(function () {
+      var $this         = $(this)
+      var $parent       = getParent($this)
+      var relatedTarget = { relatedTarget: this }
+
+      if (!$parent.hasClass('open')) return
+
+      if (e && e.type == 'click' && /input|textarea/i.test(e.target.tagName) && $.contains($parent[0], e.target)) return
+
+      $parent.trigger(e = $.Event('hide.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this.attr('aria-expanded', 'false')
+      $parent.removeClass('open').trigger($.Event('hidden.bs.dropdown', relatedTarget))
+    })
+  }
+
+  Dropdown.prototype.toggle = function (e) {
+    var $this = $(this)
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    clearMenus()
+
+    if (!isActive) {
+      if ('ontouchstart' in document.documentElement && !$parent.closest('.navbar-nav').length) {
+        // if mobile we use a backdrop because click events don't delegate
+        $(document.createElement('div'))
+          .addClass('dropdown-backdrop')
+          .insertAfter($(this))
+          .on('click', clearMenus)
+      }
+
+      var relatedTarget = { relatedTarget: this }
+      $parent.trigger(e = $.Event('show.bs.dropdown', relatedTarget))
+
+      if (e.isDefaultPrevented()) return
+
+      $this
+        .trigger('focus')
+        .attr('aria-expanded', 'true')
+
+      $parent
+        .toggleClass('open')
+        .trigger($.Event('shown.bs.dropdown', relatedTarget))
+    }
+
+    return false
+  }
+
+  Dropdown.prototype.keydown = function (e) {
+    if (!/(38|40|27|32)/.test(e.which) || /input|textarea/i.test(e.target.tagName)) return
+
+    var $this = $(this)
+
+    e.preventDefault()
+    e.stopPropagation()
+
+    if ($this.is('.disabled, :disabled')) return
+
+    var $parent  = getParent($this)
+    var isActive = $parent.hasClass('open')
+
+    if (!isActive && e.which != 27 || isActive && e.which == 27) {
+      if (e.which == 27) $parent.find(toggle).trigger('focus')
+      return $this.trigger('click')
+    }
+
+    var desc = ' li:not(.disabled):visible a'
+    var $items = $parent.find('.dropdown-menu' + desc)
+
+    if (!$items.length) return
+
+    var index = $items.index(e.target)
+
+    if (e.which == 38 && index > 0)                 index--         // up
+    if (e.which == 40 && index < $items.length - 1) index++         // down
+    if (!~index)                                    index = 0
+
+    $items.eq(index).trigger('focus')
+  }
+
+
+  // DROPDOWN PLUGIN DEFINITION
+  // ==========================
+
+  function Plugin(option) {
+    return this.each(function () {
+      var $this = $(this)
+      var data  = $this.data('bs.dropdown')
+
+      if (!data) $this.data('bs.dropdown', (data = new Dropdown(this)))
+      if (typeof option == 'string') data[option].call($this)
+    })
+  }
+
+  var old = $.fn.dropdown
+
+  $.fn.dropdown             = Plugin
+  $.fn.dropdown.Constructor = Dropdown
+
+
+  // DROPDOWN NO CONFLICT
+  // ====================
+
+  $.fn.dropdown.noConflict = function () {
+    $.fn.dropdown = old
+    return this
+  }
+
+
+  // APPLY TO STANDARD DROPDOWN ELEMENTS
+  // ===================================
+
+  $(document)
+    .on('click.bs.dropdown.data-api', clearMenus)
+    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
+    .on('keydown.bs.dropdown.data-api', toggle, Dropdown.prototype.keydown)
+    .on('keydown.bs.dropdown.data-api', '.dropdown-menu', Dropdown.prototype.keydown)
+
+}(jQuery);
+</script>
+<style type="text/css">
+.code-folding-btn {
+  margin-bottom: 4px;
+}
+
+.row { display: flex; }
+.collapse { display: none; }
+.in { display:block }
+.pull-right > .dropdown-menu {
+    right: 0;
+    left: auto;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+}
+
+.open > .dropdown-menu {
+    display: block;
+    color: #ffffff;
+    background-color: #ffffff;
+    background-image: none;
+    border-color: #92897e;
+}
+
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #000000;
+  white-space: nowrap;
+}
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #e95420;
+  outline: 0;
+}
+.dropdown-menu > .disabled > a,
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  color: #aea79f;
+}
+
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus {
+  text-decoration: none;
+  cursor: not-allowed;
+  background-color: transparent;
+  background-image: none;
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+
+.btn {
+  display: inline-block;
+  margin-bottom: 1;
+  font-weight: normal;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  padding: 4px 8px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.btn:hover,
+.btn:focus,
+.btn.focus {
+  color: #ffffff;
+  text-decoration: none;
+}
+.btn:active,
+.btn.active {
+  background-image: none;
+  outline: 0;
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn.disabled,
+.btn[disabled],
+fieldset[disabled] .btn {
+  cursor: not-allowed;
+  filter: alpha(opacity=65);
+  opacity: 0.65;
+  box-shadow: none;
+}
+a.btn.disabled,
+fieldset[disabled] a.btn {
+  pointer-events: none;
+}
+.btn-default {
+  color: #ffffff;
+  background-color: #aea79f; #important
+  border-color: #aea79f;
+}
+
+.btn-default:focus,
+.btn-default.focus {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #6f675e;
+}
+
+.btn-default:hover {
+  color: #ffffff;
+  background-color: #978e83;
+  border-color: #92897e;
+}
+.btn-default:active,
+.btn-default.active,
+.btn-group > .btn:not(:first-child):not(:last-child):not(.dropdown-toggle) {
+  border-radius: 0;
+}
+.btn-group > .btn:first-child {
+  margin-left: 0;
+}
+.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn:last-child:not(:first-child),
+.btn-group > .dropdown-toggle:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group > .btn-group {
+  float: left;
+}
+.btn-group > .btn-group:not(:first-child):not(:last-child) > .btn {
+  border-radius: 0;
+}
+.btn-group > .btn-group:first-child:not(:last-child) > .btn:last-child,
+.btn-group > .btn-group:first-child:not(:last-child) > .dropdown-toggle {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.btn-group > .btn-group:last-child:not(:first-child) > .btn:first-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.btn-group .dropdown-toggle:active,
+.btn-group.open .dropdown-toggle {
+  outline: 0;
+}
+.btn-group > .btn + .dropdown-toggle {
+  padding-right: 8px;
+  padding-left: 8px;
+}
+.btn-group > .btn-lg + .dropdown-toggle {
+  padding-right: 12px;
+  padding-left: 12px;
+}
+.btn-group.open .dropdown-toggle {
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+.btn-group.open .dropdown-toggle.btn-link {
+  box-shadow: none;
+}
+
+</style>
+<script>
+var str = '<div class="btn-group pull-right" style="position: fixed; right: 50px; top: 10px; z-index: 200"><button type="button" class="btn btn-default btn-xs dropdown-toggle" id="allCodeButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" data-_extension-text-contrast=""><span>Code</span> <span class="caret"></span></button><ul class="dropdown-menu" style="min-width: 50px;"><li><a id="rmd-show-all-code" href="#">Show All Code</a></li><li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li></ul></div>';
+document.write(str);
+</script>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "hide");
+});
+</script>
+
+
+<style type="text/css">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">nanoDSF and IP analysis</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path=""><a href="#info"><i class="fa fa-check"></i><b>1</b> Info</a></li>
+<li class="chapter" data-level="2" data-path=""><a href="#analysis-of-prometheus-stability-ph-data"><i class="fa fa-check"></i><b>2</b> Analysis of Prometheus stability pH data</a><ul>
+<li class="chapter" data-level="2.1" data-path=""><a href="#data-import"><i class="fa fa-check"></i><b>2.1</b> Data import</a></li>
+<li class="chapter" data-level="2.2" data-path=""><a href="#pre-plots-and-analysis"><i class="fa fa-check"></i><b>2.2</b> pre-plots and analysis</a></li>
+<li class="chapter" data-level="2.3" data-path=""><a href="#supplementary-nanodsf-plots"><i class="fa fa-check"></i><b>2.3</b> Supplementary nanoDSF plots</a></li>
+<li class="chapter" data-level="2.4" data-path=""><a href="#lineplot-comparison-different-ph-values"><i class="fa fa-check"></i><b>2.4</b> Lineplot comparison different pH values</a></li>
+<li class="chapter" data-level="2.5" data-path=""><a href="#boxplot-of-differences"><i class="fa fa-check"></i><b>2.5</b> boxplot of differences</a></li>
+<li class="chapter" data-level="2.6" data-path=""><a href="#columnplot-of-t-differences"><i class="fa fa-check"></i><b>2.6</b> Columnplot of T-differences</a></li>
+<li class="chapter" data-level="2.7" data-path=""><a href="#lineplot-concentration-series"><i class="fa fa-check"></i><b>2.7</b> Lineplot concentration-series</a></li>
+<li class="chapter" data-level="2.8" data-path=""><a href="#final-figures-nanodsf"><i class="fa fa-check"></i><b>2.8</b> Final Figures nanoDSF</a><ul>
+<li class="chapter" data-level="2.8.1" data-path=""><a href="#main"><i class="fa fa-check"></i><b>2.8.1</b> main</a></li>
+</ul></li>
+<li class="chapter" data-level="2.9" data-path=""><a href="#espc-analysis-of-nanodsf-titration-data"><i class="fa fa-check"></i><b>2.9</b> eSPC analysis of nanoDSF titration data</a></li>
+<li class="chapter" data-level="2.10" data-path=""><a href="#export-data-for-comparison"><i class="fa fa-check"></i><b>2.10</b> export data for comparison</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path=""><a href="#analysis-of-immunoprecipitation-data"><i class="fa fa-check"></i><b>3</b> Analysis of immunoprecipitation data</a><ul>
+<li class="chapter" data-level="3.1" data-path=""><a href="#ip-plots"><i class="fa fa-check"></i><b>3.1</b> IP plots</a></li>
+<li class="chapter" data-level="3.2" data-path=""><a href="#ip-stats"><i class="fa fa-check"></i><b>3.2</b> IP stats</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">nanoDSF and IP data of G3BP1-NTF2 binding to Caprin-1 and USP10</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">nanoDSF and IP data of G3BP1-NTF2 binding to Caprin-1 and USP10</h1>
+<p class="author"><em>[Tim Schulte]</em></p>
+</div>
+<div id="info" class="section level1 hasAnchor">
+<h1><span class="header-section-number">1</span> Info<a href="#info" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(ggplot2)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">library</span>(plyr)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">library</span>(tidyr)</span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">library</span>(stringr)</span>
+<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">library</span>(ggforce)</span>
+<span id="cb1-7"><a href="#cb1-7"></a><span class="kw">library</span>(readr)</span>
+<span id="cb1-8"><a href="#cb1-8"></a><span class="kw">library</span>(ggsci)</span>
+<span id="cb1-9"><a href="#cb1-9"></a><span class="kw">library</span>(knitr)</span>
+<span id="cb1-10"><a href="#cb1-10"></a><span class="kw">library</span>(bookdown)</span>
+<span id="cb1-11"><a href="#cb1-11"></a><span class="kw">library</span>(tinytex)</span>
+<span id="cb1-12"><a href="#cb1-12"></a><span class="kw">library</span>(kableExtra)</span>
+<span id="cb1-13"><a href="#cb1-13"></a><span class="kw">library</span>(DT)</span>
+<span id="cb1-14"><a href="#cb1-14"></a><span class="kw">library</span>(xfun)</span>
+<span id="cb1-15"><a href="#cb1-15"></a><span class="kw">library</span>(readxl)</span>
+<span id="cb1-16"><a href="#cb1-16"></a><span class="kw">library</span>(vroom)</span>
+<span id="cb1-17"><a href="#cb1-17"></a><span class="kw">library</span>(metR)</span>
+<span id="cb1-18"><a href="#cb1-18"></a><span class="kw">library</span>(reshape2)</span>
+<span id="cb1-19"><a href="#cb1-19"></a><span class="kw">library</span>(misc3d)</span>
+<span id="cb1-20"><a href="#cb1-20"></a><span class="kw">library</span>(ggforce)</span>
+<span id="cb1-21"><a href="#cb1-21"></a><span class="kw">library</span>(RColorBrewer)</span>
+<span id="cb1-22"><a href="#cb1-22"></a><span class="kw">library</span>(ggpubr)</span>
+<span id="cb1-23"><a href="#cb1-23"></a><span class="kw">library</span>(bsts)</span>
+<span id="cb1-24"><a href="#cb1-24"></a><span class="kw">library</span>(prospectr)</span>
+<span id="cb1-25"><a href="#cb1-25"></a><span class="kw">library</span>(ggridges)</span>
+<span id="cb1-26"><a href="#cb1-26"></a><span class="kw">library</span>(svglite)</span>
+<span id="cb1-27"><a href="#cb1-27"></a><span class="kw">library</span>(plotly)</span>
+<span id="cb1-28"><a href="#cb1-28"></a><span class="kw">library</span>(rstatix)</span></code></pre></div>
+<p>nanoDSF Data and immunoprecipitation data as Supplemental data on <a href="https://doi.org/10.5061/dryad.k98sf7mb8">DRYAD</a>.</p>
+<p>NanoDSF data were collected as described in the methods section of the <a href="to%20be%20linked">associated manuscript</a>. Data were analyzed using the Prometheus <a href="https://nanotempertech.com/prometheus-software/">software</a>. The preprocessed data are availabe in the associated data folders. This script was only used to import and tidy the data to generate the plots.</p>
+</div>
+<div id="analysis-of-prometheus-stability-ph-data" class="section level1 hasAnchor">
+<h1><span class="header-section-number">2</span> Analysis of Prometheus stability pH data<a href="#analysis-of-prometheus-stability-ph-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="data-import" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.1</span> Data import<a href="#data-import" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>paste_names_f &lt;-<span class="st">  </span><span class="cf">function</span>(paste1, paste2){</span>
+<span id="cb2-2"><a href="#cb2-2"></a>  character_out &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;[^(^&quot;</span>, paste1, paste2, <span class="st">&quot;$)]&quot;</span>, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb2-3"><a href="#cb2-3"></a>  <span class="kw">return</span>(character_out)</span>
+<span id="cb2-4"><a href="#cb2-4"></a>}</span>
+<span id="cb2-5"><a href="#cb2-5"></a></span>
+<span id="cb2-6"><a href="#cb2-6"></a>unlist_PH_string_f &lt;-<span class="st"> </span><span class="cf">function</span>(PHlist){</span>
+<span id="cb2-7"><a href="#cb2-7"></a>  PHstring &lt;-<span class="st"> </span>PHlist <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unlist</span>() <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">name =</span> <span class="kw">paste</span>(<span class="st">&quot;character&quot;</span>, <span class="kw">row_number</span>(), <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_wider</span>(., <span class="dt">names_from =</span> name, <span class="dt">values_from =</span> value) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unite</span>(<span class="st">&quot;character&quot;</span>, <span class="kw">contains</span>(<span class="st">&quot;character&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>()</span>
+<span id="cb2-8"><a href="#cb2-8"></a>  <span class="kw">return</span>(PHstring)</span>
+<span id="cb2-9"><a href="#cb2-9"></a>}</span>
+<span id="cb2-10"><a href="#cb2-10"></a></span>
+<span id="cb2-11"><a href="#cb2-11"></a>str_replace_all_f &lt;-<span class="st"> </span><span class="cf">function</span>(string, pattern){</span>
+<span id="cb2-12"><a href="#cb2-12"></a>  string_out &lt;-<span class="st"> </span><span class="kw">str_replace_all</span>(string, pattern, <span class="st">&quot;&quot;</span>)</span>
+<span id="cb2-13"><a href="#cb2-13"></a><span class="kw">return</span>(string_out)</span>
+<span id="cb2-14"><a href="#cb2-14"></a>}</span>
+<span id="cb2-15"><a href="#cb2-15"></a></span>
+<span id="cb2-16"><a href="#cb2-16"></a>addcolumn_f &lt;-<span class="st"> </span><span class="cf">function</span>(data, column){</span>
+<span id="cb2-17"><a href="#cb2-17"></a>  data_out &lt;-<span class="st"> </span>data <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">add_column</span>(., column)</span>
+<span id="cb2-18"><a href="#cb2-18"></a>  <span class="kw">return</span>(data_out)</span>
+<span id="cb2-19"><a href="#cb2-19"></a>}</span>
+<span id="cb2-20"><a href="#cb2-20"></a></span>
+<span id="cb2-21"><a href="#cb2-21"></a>ratio_length_f &lt;-<span class="st"> </span><span class="cf">function</span>(df){</span>
+<span id="cb2-22"><a href="#cb2-22"></a>  value_out &lt;-<span class="st"> </span><span class="kw">length</span>(df) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">na_if</span>(<span class="dv">0</span>)</span>
+<span id="cb2-23"><a href="#cb2-23"></a>  <span class="kw">return</span>(value_out)</span>
+<span id="cb2-24"><a href="#cb2-24"></a>}</span>
+<span id="cb2-25"><a href="#cb2-25"></a></span>
+<span id="cb2-26"><a href="#cb2-26"></a>plotname_f &lt;-<span class="st"> </span><span class="cf">function</span>(collection, id){</span>
+<span id="cb2-27"><a href="#cb2-27"></a>  name_out &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;./plots_&quot;</span>, collection, <span class="st">&quot;/plot&quot;</span>, id, <span class="st">&quot;.jpeg&quot;</span>, <span class="dt">sep =</span><span class="st">&quot;&quot;</span> )</span>
+<span id="cb2-28"><a href="#cb2-28"></a>  <span class="kw">return</span>(name_out)</span>
+<span id="cb2-29"><a href="#cb2-29"></a>}</span>
+<span id="cb2-30"><a href="#cb2-30"></a></span>
+<span id="cb2-31"><a href="#cb2-31"></a>plot_derivative_f &lt;-<span class="st"> </span><span class="cf">function</span>(data, ip1, ip2, ip3, ip4, ip5, ip6){</span>
+<span id="cb2-32"><a href="#cb2-32"></a>  ip_tibble &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(<span class="kw">c</span>(ip1, ip2, ip3, ip4, ip5, ip6)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ip =</span> <span class="kw">row_number</span>())</span>
+<span id="cb2-33"><a href="#cb2-33"></a>  plot_out &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="kw">geom_line</span>(<span class="dt">data =</span> data,<span class="kw">aes</span>(<span class="dt">x=</span>Temp, <span class="dt">y=</span>ratio)) <span class="op">+</span><span class="st"> </span><span class="kw">geom_vline</span>(<span class="dt">data =</span> ip_tibble, <span class="kw">aes</span>(<span class="dt">xintercept =</span> value, <span class="dt">colour =</span> <span class="kw">as_factor</span>(ip))) <span class="op">+</span><span class="st"> </span><span class="kw">theme_minimal</span>() </span>
+<span id="cb2-34"><a href="#cb2-34"></a>  <span class="kw">return</span>(plot_out)</span>
+<span id="cb2-35"><a href="#cb2-35"></a>}</span>
+<span id="cb2-36"><a href="#cb2-36"></a></span>
+<span id="cb2-37"><a href="#cb2-37"></a>rawplotname_f &lt;-<span class="st"> </span><span class="cf">function</span>(collection, id){</span>
+<span id="cb2-38"><a href="#cb2-38"></a>  name_out &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;./rawplots_&quot;</span>, collection, <span class="st">&quot;/rawplot&quot;</span>, id, <span class="st">&quot;.jpeg&quot;</span>, <span class="dt">sep =</span><span class="st">&quot;&quot;</span> )</span>
+<span id="cb2-39"><a href="#cb2-39"></a>  <span class="kw">return</span>(name_out)</span>
+<span id="cb2-40"><a href="#cb2-40"></a>}</span>
+<span id="cb2-41"><a href="#cb2-41"></a></span>
+<span id="cb2-42"><a href="#cb2-42"></a></span>
+<span id="cb2-43"><a href="#cb2-43"></a>PHvalues &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>PHstring, <span class="op">~</span>PHvalues,</span>
+<span id="cb2-44"><a href="#cb2-44"></a>                    <span class="kw">c</span>(<span class="st">&quot;_PH74__&quot;</span>, <span class="st">&quot;_PH50__&quot;</span>, <span class="st">&quot;_PH60__&quot;</span>, <span class="st">&quot;_PH51__&quot;</span>, <span class="st">&quot;5&quot;</span>, <span class="st">&quot;6&quot;</span>, <span class="st">&quot;7.5&quot;</span>, <span class="st">&quot;8.5&quot;</span>, <span class="st">&quot; 7.5to5&quot;</span>, <span class="st">&quot; 6to5&quot;</span>, <span class="st">&quot;2_ph5&quot;</span>, <span class="st">&quot;2_ph6&quot;</span>, <span class="st">&quot; 5&quot;</span>, <span class="st">&quot;  5&quot;</span>, <span class="st">&quot;PH56&quot;</span>,<span class="st">&quot;PH50&quot;</span>, <span class="st">&quot;PH61&quot;</span>, <span class="st">&quot;PH74&quot;</span>),</span>
+<span id="cb2-45"><a href="#cb2-45"></a>                    <span class="kw">c</span>(<span class="fl">7.5</span>, <span class="fl">5.1</span>, <span class="dv">6</span>, <span class="fl">5.1</span>, <span class="fl">5.1</span>, <span class="dv">6</span>, <span class="fl">7.5</span>, <span class="fl">8.5</span>, <span class="fl">5.1</span>, <span class="fl">5.1</span>, <span class="fl">5.1</span>, <span class="dv">6</span>, <span class="fl">5.1</span>, <span class="fl">5.1</span>, <span class="fl">5.6</span>, <span class="fl">5.1</span>, <span class="dv">6</span>, <span class="fl">7.5</span>))</span>
+<span id="cb2-46"><a href="#cb2-46"></a></span>
+<span id="cb2-47"><a href="#cb2-47"></a>PHvalues &lt;-<span class="st"> </span>PHvalues <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="dt">cols =</span> <span class="kw">c</span>(<span class="st">&quot;PHstring&quot;</span>, <span class="st">&quot;PHvalues&quot;</span>))</span>
+<span id="cb2-48"><a href="#cb2-48"></a></span>
+<span id="cb2-49"><a href="#cb2-49"></a>promethues_list =<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">path =</span> <span class="st">&quot;./data_prometheus&quot;</span>, <span class="dt">pattern =</span> <span class="st">&quot;*&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">include.dirs =</span> <span class="ot">TRUE</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb2-50"><a href="#cb2-50"></a>promethues_list.tib &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(promethues_list)</span>
+<span id="cb2-51"><a href="#cb2-51"></a></span>
+<span id="cb2-52"><a href="#cb2-52"></a>prometheus_coladd &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>filtername, <span class="op">~</span>datasetid, <span class="op">~</span>range, <span class="op">~</span>colnames, <span class="op">~</span>collection,</span>
+<span id="cb2-53"><a href="#cb2-53"></a>                          <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:J9&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;onset&quot;</span>, <span class="st">&quot;ip1&quot;</span>), <span class="st">&quot;TS1&quot;</span>,</span>
+<span id="cb2-54"><a href="#cb2-54"></a>                          <span class="st">&quot;202009xNTF2xUSPCAPxPHxH31AxPROCESSEDx330nm.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:J42&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;ip1&quot;</span>, <span class="st">&quot;ip2&quot;</span>), <span class="st">&quot;TS1&quot;</span>,</span>
+<span id="cb2-55"><a href="#cb2-55"></a>                          <span class="st">&quot;202009xNTF2xUSPCAPxPHx01xPROCESSEDx330nm.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:J49&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;ip1&quot;</span>, <span class="st">&quot;ip2&quot;</span>), <span class="st">&quot;TS2&quot;</span>,</span>
+<span id="cb2-56"><a href="#cb2-56"></a>                          <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:N47&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;ip1&quot;</span>, <span class="st">&quot;ip2&quot;</span>,<span class="st">&quot;ip3&quot;</span>, <span class="st">&quot;ip4&quot;</span>,<span class="st">&quot;ip5&quot;</span>, <span class="st">&quot;ip6&quot;</span>), <span class="st">&quot;XH1&quot;</span>,</span>
+<span id="cb2-57"><a href="#cb2-57"></a>                          <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:N43&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;ip1&quot;</span>, <span class="st">&quot;ip2&quot;</span>,<span class="st">&quot;ip3&quot;</span>, <span class="st">&quot;ip4&quot;</span>,<span class="st">&quot;ip5&quot;</span>, <span class="st">&quot;ip6&quot;</span>), <span class="st">&quot;XH1&quot;</span>,</span>
+<span id="cb2-58"><a href="#cb2-58"></a>                           <span class="st">&quot;20220409xNTF2YYxPROCESSEDx330nm.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:L11&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;ip1&quot;</span>, <span class="st">&quot;ip2&quot;</span>,<span class="st">&quot;ip3&quot;</span>, <span class="st">&quot;ip4&quot;</span>), <span class="st">&quot;XH1&quot;</span>, </span>
+<span id="cb2-59"><a href="#cb2-59"></a>                          <span class="st">&quot;20220429_CAP_TITRATION_330PROCESSED.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:L49&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;ip1&quot;</span>, <span class="st">&quot;ip2&quot;</span>,<span class="st">&quot;ip3&quot;</span>, <span class="st">&quot;ip4&quot;</span>), <span class="st">&quot;XH2&quot;</span>,</span>
+<span id="cb2-60"><a href="#cb2-60"></a>                          <span class="st">&quot;20220429_USP_TITRATION_330PROCESSED.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:L49&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;capillary&quot;</span>, <span class="st">&quot;sampleID&quot;</span>, <span class="st">&quot;power&quot;</span>, <span class="st">&quot;Tstart&quot;</span>, <span class="st">&quot;Tend&quot;</span>, <span class="st">&quot;Tslope&quot;</span>, <span class="st">&quot;Start&quot;</span>, <span class="st">&quot;duration&quot;</span>, <span class="st">&quot;ip1&quot;</span>, <span class="st">&quot;ip2&quot;</span>,<span class="st">&quot;ip3&quot;</span>, <span class="st">&quot;ip4&quot;</span>), <span class="st">&quot;XH2&quot;</span>, </span>
+<span id="cb2-61"><a href="#cb2-61"></a>)</span>
+<span id="cb2-62"><a href="#cb2-62"></a></span>
+<span id="cb2-63"><a href="#cb2-63"></a>filter_files &lt;-<span class="st"> </span>prometheus_coladd <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., filtername) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">id =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">idname =</span> <span class="kw">paste</span>(<span class="st">&quot;filename&quot;</span>, id, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>id) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_wider</span>(., <span class="dt">names_from =</span> <span class="kw">c</span>(<span class="st">&quot;idname&quot;</span>), <span class="dt">values_from =</span> <span class="st">&quot;filtername&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unite</span>(., string, <span class="kw">everything</span>(), <span class="dt">sep =</span><span class="st">&quot;|&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pull</span>()</span>
+<span id="cb2-64"><a href="#cb2-64"></a></span>
+<span id="cb2-65"><a href="#cb2-65"></a>prometheus_data.tib &lt;-<span class="st"> </span>promethues_list.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">filterme =</span> <span class="kw">str_detect</span>(value, filter_files), <span class="dt">filtername =</span> <span class="kw">str_extract</span>(value, filter_files)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., filterme <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) </span>
+<span id="cb2-66"><a href="#cb2-66"></a></span>
+<span id="cb2-67"><a href="#cb2-67"></a></span>
+<span id="cb2-68"><a href="#cb2-68"></a>sort_names &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>collection, <span class="op">~</span>NTF2names, <span class="op">~</span>DMSO, <span class="op">~</span>Lignames,</span>
+<span id="cb2-69"><a href="#cb2-69"></a>                      <span class="st">&quot;TS1&quot;</span>, <span class="st">&quot;NTF2|NTF|H31A|NONE&quot;</span>, <span class="st">&quot;D4&quot;</span>, <span class="st">&quot;CAP[:digit:][:digit:]|USP[:digit:][:digit:]|NONE&quot;</span>,</span>
+<span id="cb2-70"><a href="#cb2-70"></a>                      <span class="st">&quot;TS2&quot;</span>, <span class="st">&quot;NTF2|NTF|H31A|NONE&quot;</span>, <span class="st">&quot;D4&quot;</span>, <span class="st">&quot;CAP[:digit:][:digit:]|USP[:digit:][:digit:]|NONE&quot;</span>,</span>
+<span id="cb2-71"><a href="#cb2-71"></a>                      <span class="st">&quot;XH1&quot;</span>, <span class="st">&quot;NTF|YY|H31A&quot;</span>, <span class="st">&quot;D4&quot;</span>, <span class="st">&quot;CAP|USP&quot;</span>,</span>
+<span id="cb2-72"><a href="#cb2-72"></a>                      <span class="st">&quot;XH2&quot;</span>, <span class="st">&quot;NTF&quot;</span>, <span class="st">&quot;D4&quot;</span>, <span class="st">&quot;((CAP)(.){1,10})(?=(ph))|((USP)(.){1,10})(?=(ph))&quot;</span>)</span>
+<span id="cb2-73"><a href="#cb2-73"></a></span>
+<span id="cb2-74"><a href="#cb2-74"></a>sort_names &lt;-<span class="st"> </span>sort_names <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">selectpH =</span> <span class="kw">paste</span>(NTF2names, DMSO,Lignames, <span class="dt">sep =</span> <span class="st">&quot;|&quot;</span> ))</span>
+<span id="cb2-75"><a href="#cb2-75"></a></span>
+<span id="cb2-76"><a href="#cb2-76"></a>prometheus_coladd &lt;-<span class="st"> </span>prometheus_coladd <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., sort_names)</span>
+<span id="cb2-77"><a href="#cb2-77"></a></span>
+<span id="cb2-78"><a href="#cb2-78"></a>NTF2group_tib &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>NTF2, <span class="op">~</span>NTF2group,</span>
+<span id="cb2-79"><a href="#cb2-79"></a>                         <span class="st">&quot;NTF2&quot;</span>, <span class="st">&quot;aWT&quot;</span>,</span>
+<span id="cb2-80"><a href="#cb2-80"></a>                         <span class="st">&quot;NTF&quot;</span>, <span class="st">&quot;aWT&quot;</span>,</span>
+<span id="cb2-81"><a href="#cb2-81"></a>                         <span class="st">&quot;H31A&quot;</span>, <span class="st">&quot;bH31A&quot;</span>,</span>
+<span id="cb2-82"><a href="#cb2-82"></a>                         <span class="st">&quot;YY&quot;</span>, <span class="st">&quot;cH31YH62Y&quot;</span>,</span>
+<span id="cb2-83"><a href="#cb2-83"></a>                         <span class="st">&quot;NONE&quot;</span>, <span class="st">&quot;dNONE&quot;</span>)</span>
+<span id="cb2-84"><a href="#cb2-84"></a></span>
+<span id="cb2-85"><a href="#cb2-85"></a>ligandgroup_tib &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>ligandshort, <span class="op">~</span>ligandgroup,</span>
+<span id="cb2-86"><a href="#cb2-86"></a>                           <span class="st">&quot;NONE&quot;</span>, <span class="st">&quot;aNONE&quot;</span>,</span>
+<span id="cb2-87"><a href="#cb2-87"></a>                           <span class="st">&quot;USP&quot;</span>, <span class="st">&quot;bUSP&quot;</span>,</span>
+<span id="cb2-88"><a href="#cb2-88"></a>                           <span class="st">&quot;CAP&quot;</span>, <span class="st">&quot;cCAP&quot;</span>)</span>
+<span id="cb2-89"><a href="#cb2-89"></a></span>
+<span id="cb2-90"><a href="#cb2-90"></a>LIGcolor_scale &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>name, <span class="op">~</span>value, <span class="kw">c</span>( <span class="st">&quot;aNONE&quot;</span>, <span class="st">&quot;bUSP&quot;</span>, <span class="st">&quot;cCAP&quot;</span>, <span class="st">&quot;scale&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;#D1D1D1&quot;</span> ,<span class="st">&quot;#B9C9AD&quot;</span>,<span class="st">&quot;#3FC6D8&quot;</span>, <span class="st">&quot;#FFFFFF00&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., name, value) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">deframe</span>()</span>
+<span id="cb2-91"><a href="#cb2-91"></a></span>
+<span id="cb2-92"><a href="#cb2-92"></a>concentrations_tib &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>conc_string, <span class="op">~</span>conc_uM,</span>
+<span id="cb2-93"><a href="#cb2-93"></a>                              <span class="kw">c</span>(<span class="st">&quot;&quot;</span>, <span class="st">&quot;01&quot;</span>, <span class="st">&quot;02&quot;</span>, <span class="st">&quot;03&quot;</span>, <span class="st">&quot;04&quot;</span>, <span class="st">&quot;05&quot;</span>, <span class="st">&quot;06&quot;</span>, <span class="st">&quot;07&quot;</span>, <span class="st">&quot;08&quot;</span>, <span class="st">&quot;09&quot;</span>, <span class="st">&quot;10&quot;</span>, <span class="st">&quot;11&quot;</span>, <span class="st">&quot;_200&quot;</span>, <span class="st">&quot;_100&quot;</span>, <span class="st">&quot;_50&quot;</span>, <span class="st">&quot;_25&quot;</span>, <span class="st">&quot;_12.5&quot;</span>, <span class="st">&quot;_6.25&quot;</span>, <span class="st">&quot;_3.625&quot;</span>, <span class="st">&quot;_1.8&quot;</span>, <span class="st">&quot;_0.9&quot;</span>, <span class="st">&quot;_0.45&quot;</span>, <span class="st">&quot;_0.225&quot;</span>, <span class="st">&quot;_0.11&quot;</span>),</span>
+<span id="cb2-94"><a href="#cb2-94"></a>                              <span class="kw">c</span>(<span class="dv">200</span>, (<span class="dv">800</span><span class="op">/</span>(<span class="dv">2</span><span class="op">^</span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">11</span>,<span class="dt">by=</span><span class="dv">1</span>))), (<span class="dv">400</span><span class="op">/</span>(<span class="dv">2</span><span class="op">^</span><span class="kw">seq</span>(<span class="dv">1</span>,<span class="dv">12</span>,<span class="dt">by=</span><span class="dv">1</span>)))))</span>
+<span id="cb2-95"><a href="#cb2-95"></a></span>
+<span id="cb2-96"><a href="#cb2-96"></a>concentrations_tib &lt;-<span class="st"> </span>concentrations_tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="dt">cols =</span> <span class="kw">c</span>(<span class="st">&quot;conc_string&quot;</span>, <span class="st">&quot;conc_uM&quot;</span>))</span>
+<span id="cb2-97"><a href="#cb2-97"></a></span>
+<span id="cb2-98"><a href="#cb2-98"></a><span class="co">#sedphat_columns &lt;- sedphat_columns %&gt;% dplyr::mutate(., datasets_seq = purrr::map(datasets, ~seq_along_c(.))) %&gt;% unnest(., cols = &quot;datasets_seq&quot;) %&gt;% left_join(., sedphat_coladd) %&gt;% dplyr::select(., folder, datasetid = value, range, colnames)</span></span>
+<span id="cb2-99"><a href="#cb2-99"></a></span>
+<span id="cb2-100"><a href="#cb2-100"></a></span>
+<span id="cb2-101"><a href="#cb2-101"></a>prometheus_data.tib &lt;-<span class="st"> </span>prometheus_data.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., prometheus_coladd) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value, datasetid, range, colnames), read_xlsx)) </span>
+<span id="cb2-102"><a href="#cb2-102"></a></span>
+<span id="cb2-103"><a href="#cb2-103"></a>prometheus_data_ratio.pretib &lt;-<span class="st"> </span>prometheus_data.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., value, filtername, data, collection, NTF2names, Lignames, selectpH) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">meas_type =</span> <span class="kw">str_extract</span>(filtername, <span class="dt">pattern =</span> <span class="kw">c</span>(<span class="st">&quot;330&quot;</span>))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="dt">cols =</span> <span class="kw">c</span>(<span class="st">&quot;data&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(., capillary) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">cap1 =</span> <span class="kw">case_when</span>(capillary <span class="op">&lt;</span><span class="st"> </span><span class="dv">25</span> <span class="op">~</span><span class="st"> </span>capillary<span class="op">+</span><span class="dv">2</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="dv">1</span>), <span class="dt">cap2 =</span> <span class="kw">case_when</span>(cap1 <span class="op">==</span><span class="st"> </span><span class="dv">1</span> <span class="op">~</span><span class="st"> </span>capillary<span class="dv">-24</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="dv">27</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">letter1 =</span> LETTERS[cap1], <span class="dt">letter2 =</span> LETTERS[cap2]) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unite</span>(., <span class="st">&quot;rangeletters&quot;</span>, <span class="kw">contains</span>(<span class="st">&quot;letter&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">range =</span> <span class="kw">paste</span>(rangeletters, <span class="kw">toString</span>(<span class="dv">4</span>),<span class="st">&quot;:&quot;</span>, rangeletters, <span class="kw">toString</span>(<span class="dv">5000</span>), <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>), <span class="dt">sheet =</span> <span class="dv">5</span>, <span class="dt">sheet_raw =</span> <span class="dv">4</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">wv330dev =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value, sheet, range, <span class="kw">c</span>(<span class="st">&quot;ratio&quot;</span>)), read_xlsx), <span class="dt">Temp =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value, sheet, <span class="st">&quot;B4:B5000&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;Temp&quot;</span>)), read_xlsx), <span class="dt">wv330raw =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value, sheet_raw, range, <span class="kw">c</span>(<span class="st">&quot;ratio&quot;</span>)), read_xlsx)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">NTF2 =</span> <span class="kw">str_extract</span>(sampleID, NTF2names), <span class="dt">ligand =</span> <span class="kw">str_extract</span>(sampleID, Lignames)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">NTF2Lig =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>( NTF2, ligand), paste_names_f)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="kw">c</span>(<span class="st">&quot;NTF2Lig&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">PHstring =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(sampleID, selectpH), str_replace_all_f ))  </span>
+<span id="cb2-104"><a href="#cb2-104"></a></span>
+<span id="cb2-105"><a href="#cb2-105"></a>prometheus_data_ratio.tib &lt;-<span class="st"> </span>prometheus_data_ratio.pretib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">replace_na</span>(., <span class="kw">list</span>(<span class="dt">ligand =</span> <span class="st">&quot;NONE&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">conc_string =</span> <span class="kw">str_replace_all</span>(ligand, <span class="st">&quot;USP|CAP|NONE&quot;</span>, <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., concentrations_tib) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., PHstring) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., PHvalues) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., NTF2group_tib) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ligandshort =</span> <span class="kw">str_extract</span>(ligand, <span class="st">&quot;(USP)|(CAP)|(NONE)&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., ligandgroup_tib)  <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(., collection) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">arrange</span>(., NTF2group, ligandgroup, PHvalues, conc_uM) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">rowid =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">plotname =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(collection, rowid), plotname_f), <span class="dt">rawplotname =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(collection, rowid), rawplotname_f)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(Temp, wv330dev), addcolumn_f), <span class="dt">data_raw =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(Temp, wv330raw), addcolumn_f)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data_test =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(wv330dev), ratio_length_f)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data_test) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(., data_test) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">dataplot =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(data, ip1, ip2, ip3, ip4, ip5, ip6), plot_derivative_f), <span class="dt">rawdata_plot =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(data_raw, ip1, ip2, ip3, ip4, ip5, ip6), plot_derivative_f))</span></code></pre></div>
+</div>
+<div id="pre-plots-and-analysis" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.2</span> pre-plots and analysis<a href="#pre-plots-and-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Plotting all data in folders to confirm/reject Tm-values.<br />
+In folders plots_TS1, plots_TS2, plots_XH1 and plots_XH2.<br />
+this chunk is not run in Rmarkdown.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>plot_directories &lt;-<span class="st"> </span>prometheus_data_ratio.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(<span class="kw">contains</span>(<span class="st">&quot;plotname&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="kw">everything</span>()) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_longer</span>(., <span class="kw">everything</span>()) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., value, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;dot&quot;</span>, <span class="st">&quot;folder&quot;</span>, <span class="st">&quot;plot&quot;</span>), <span class="dt">sep =</span><span class="st">&quot;/&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unite</span>(., <span class="st">&quot;foldername&quot;</span>, <span class="kw">c</span>(dot, folder), <span class="dt">sep =</span> <span class="st">&quot;/&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., foldername) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unique</span>() </span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a><span class="kw">pwalk</span>(<span class="kw">list</span>(plot_directories<span class="op">$</span>foldername),dir.create)   </span>
+<span id="cb3-4"><a href="#cb3-4"></a>         </span>
+<span id="cb3-5"><a href="#cb3-5"></a><span class="kw">pwalk</span>(<span class="kw">list</span>(prometheus_data_ratio.tib<span class="op">$</span>plotname, prometheus_data_ratio.tib<span class="op">$</span>dataplot), ggsave)</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="kw">pwalk</span>(<span class="kw">list</span>(prometheus_data_ratio.tib<span class="op">$</span>rawplotname, prometheus_data_ratio.tib<span class="op">$</span>rawdata_plot), ggsave)</span></code></pre></div>
+<p>here went through the plots in the folders and checked manually for the position with the help of plotly. Simply run in commandline in Rstudio.<br />
+not run in Rmarkdown.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>prometheus_data_ratio.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., collection <span class="op">==</span><span class="st"> &quot;TS1&quot;</span>, rowid <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span>.<span class="op">$</span>dataplot</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="kw">ggplotly</span>()</span>
+<span id="cb4-3"><a href="#cb4-3"></a>prometheus_data_ratio.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., collection <span class="op">==</span><span class="st"> &quot;TS1&quot;</span>, rowid <span class="op">==</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., capillary, filtername)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>ip_standard &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>collection, <span class="op">~</span>ip_standard,</span>
+<span id="cb5-2"><a href="#cb5-2"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="st">&quot;ip1&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3"></a>                       <span class="st">&quot;TS2&quot;</span>, <span class="st">&quot;ip1&quot;</span>,</span>
+<span id="cb5-4"><a href="#cb5-4"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="st">&quot;ip1&quot;</span>,</span>
+<span id="cb5-5"><a href="#cb5-5"></a>                       <span class="st">&quot;XH2&quot;</span>, <span class="st">&quot;ip1&quot;</span>)</span>
+<span id="cb5-6"><a href="#cb5-6"></a></span>
+<span id="cb5-7"><a href="#cb5-7"></a>ip_selected &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>collection, <span class="op">~</span>capillary, <span class="op">~</span>filtername, <span class="op">~</span>ip_selected,</span>
+<span id="cb5-8"><a href="#cb5-8"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-9"><a href="#cb5-9"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="dv">2</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-10"><a href="#cb5-10"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="dv">3</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="dv">4</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-12"><a href="#cb5-12"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="dv">5</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-13"><a href="#cb5-13"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="dv">6</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-14"><a href="#cb5-14"></a>                       <span class="st">&quot;TS1&quot;</span>, <span class="dv">7</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-15"><a href="#cb5-15"></a>                       <span class="st">&quot;TS2&quot;</span>, <span class="dv">4</span>, <span class="st">&quot;202009xNTF2xUSPCAPxPHx01xPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-16"><a href="#cb5-16"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">13</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-17"><a href="#cb5-17"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">14</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-18"><a href="#cb5-18"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">15</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-19"><a href="#cb5-19"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">16</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-20"><a href="#cb5-20"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">17</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-21"><a href="#cb5-21"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">18</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-22"><a href="#cb5-22"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">19</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-23"><a href="#cb5-23"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">20</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-24"><a href="#cb5-24"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">21</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-25"><a href="#cb5-25"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">38</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-26"><a href="#cb5-26"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">25</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-27"><a href="#cb5-27"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">26</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-28"><a href="#cb5-28"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">23</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-29"><a href="#cb5-29"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">24</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-30"><a href="#cb5-30"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">27</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-31"><a href="#cb5-31"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">39</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-32"><a href="#cb5-32"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">25</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-33"><a href="#cb5-33"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">26</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-34"><a href="#cb5-34"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">27</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-35"><a href="#cb5-35"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">28</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-36"><a href="#cb5-36"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">29</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-37"><a href="#cb5-37"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">30</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-38"><a href="#cb5-38"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">31</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-39"><a href="#cb5-39"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">32</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-40"><a href="#cb5-40"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">34</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-41"><a href="#cb5-41"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">33</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-42"><a href="#cb5-42"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">34</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-43"><a href="#cb5-43"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">41</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip2&quot;</span>,</span>
+<span id="cb5-44"><a href="#cb5-44"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">42</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-45"><a href="#cb5-45"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">35</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-46"><a href="#cb5-46"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">36</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-47"><a href="#cb5-47"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">43</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-48"><a href="#cb5-48"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">40</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-49"><a href="#cb5-49"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">41</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-50"><a href="#cb5-50"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">42</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-51"><a href="#cb5-51"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-52"><a href="#cb5-52"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">2</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-53"><a href="#cb5-53"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">3</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-54"><a href="#cb5-54"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">4</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-55"><a href="#cb5-55"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">5</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-56"><a href="#cb5-56"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">6</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-57"><a href="#cb5-57"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">7</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-58"><a href="#cb5-58"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">8</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-59"><a href="#cb5-59"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">9</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-60"><a href="#cb5-60"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">10</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-61"><a href="#cb5-61"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">11</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip4&quot;</span>,</span>
+<span id="cb5-62"><a href="#cb5-62"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">12</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-63"><a href="#cb5-63"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">9</span>, <span class="st">&quot;20220409xNTF2YYxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-64"><a href="#cb5-64"></a>                       <span class="st">&quot;XH1&quot;</span>, <span class="dv">10</span>, <span class="st">&quot;20220409xNTF2YYxPROCESSEDx330nm.xlsx&quot;</span>, <span class="st">&quot;ip3&quot;</span>,</span>
+<span id="cb5-65"><a href="#cb5-65"></a>                       <span class="st">&quot;XH2&quot;</span>, <span class="dv">7</span>, <span class="st">&quot;20220429_USP_TITRATION_330PROCESSED.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>,</span>
+<span id="cb5-66"><a href="#cb5-66"></a>                       <span class="st">&quot;XH2&quot;</span>, <span class="dv">8</span>, <span class="st">&quot;20220429_USP_TITRATION_330PROCESSED.xlsx&quot;</span>, <span class="st">&quot;ip7&quot;</span>)</span>
+<span id="cb5-67"><a href="#cb5-67"></a></span>
+<span id="cb5-68"><a href="#cb5-68"></a>value_corrected &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>collection, <span class="op">~</span>capillary, <span class="op">~</span>filtername, <span class="op">~</span>ip7,</span>
+<span id="cb5-69"><a href="#cb5-69"></a>                           <span class="st">&quot;TS1&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="fl">31.3</span>,</span>
+<span id="cb5-70"><a href="#cb5-70"></a>                           <span class="st">&quot;TS1&quot;</span>, <span class="dv">2</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="dv">32</span>,</span>
+<span id="cb5-71"><a href="#cb5-71"></a>                           <span class="st">&quot;TS1&quot;</span>, <span class="dv">3</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="fl">45.8</span>,</span>
+<span id="cb5-72"><a href="#cb5-72"></a>                           <span class="st">&quot;TS1&quot;</span>, <span class="dv">4</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="fl">46.4</span>,</span>
+<span id="cb5-73"><a href="#cb5-73"></a>                           <span class="st">&quot;TS1&quot;</span>, <span class="dv">5</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="dv">51</span>,</span>
+<span id="cb5-74"><a href="#cb5-74"></a>                           <span class="st">&quot;TS1&quot;</span>, <span class="dv">6</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="dv">51</span>,</span>
+<span id="cb5-75"><a href="#cb5-75"></a>                           <span class="st">&quot;TS1&quot;</span>, <span class="dv">7</span>, <span class="st">&quot;202008xNTF2xPHxPROCx330nm.xlsx&quot;</span>, <span class="fl">55.8</span>,</span>
+<span id="cb5-76"><a href="#cb5-76"></a>                           <span class="st">&quot;TS2&quot;</span>, <span class="dv">4</span>, <span class="st">&quot;202009xNTF2xUSPCAPxPHx01xPROCESSEDx330nm.xlsx&quot;</span>, <span class="ot">NA</span>,</span>
+<span id="cb5-77"><a href="#cb5-77"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">38</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="fl">49.3</span>,</span>
+<span id="cb5-78"><a href="#cb5-78"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">25</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="ot">NA</span>,</span>
+<span id="cb5-79"><a href="#cb5-79"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">26</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="ot">NA</span>,</span>
+<span id="cb5-80"><a href="#cb5-80"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">39</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="fl">44.5</span>,</span>
+<span id="cb5-81"><a href="#cb5-81"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">25</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="fl">34.5</span>,</span>
+<span id="cb5-82"><a href="#cb5-82"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">34</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="ot">NA</span>,</span>
+<span id="cb5-83"><a href="#cb5-83"></a>                           <span class="co">#&quot;XH1&quot;, 41, &quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;, NA,</span></span>
+<span id="cb5-84"><a href="#cb5-84"></a>                           <span class="co">#&quot;XH1&quot;, 42, &quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;,NA,</span></span>
+<span id="cb5-85"><a href="#cb5-85"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">35</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>,<span class="ot">NA</span>,</span>
+<span id="cb5-86"><a href="#cb5-86"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">36</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>,<span class="ot">NA</span>,</span>
+<span id="cb5-87"><a href="#cb5-87"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">43</span>, <span class="st">&quot;20220407xNTF2xUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="ot">NA</span>,</span>
+<span id="cb5-88"><a href="#cb5-88"></a>                           <span class="st">&quot;XH1&quot;</span>, <span class="dv">40</span>, <span class="st">&quot;20220408xNTF2YYxUSPCAPxPROCESSEDx330nm.xlsx&quot;</span>, <span class="ot">NA</span>,</span>
+<span id="cb5-89"><a href="#cb5-89"></a>                           <span class="st">&quot;XH2&quot;</span>, <span class="dv">7</span>, <span class="st">&quot;20220429_USP_TITRATION_330PROCESSED.xlsx&quot;</span>, <span class="fl">42.6</span>,</span>
+<span id="cb5-90"><a href="#cb5-90"></a>                           <span class="st">&quot;XH2&quot;</span>, <span class="dv">8</span>, <span class="st">&quot;20220429_USP_TITRATION_330PROCESSED.xlsx&quot;</span>, <span class="fl">40.8</span>)</span>
+<span id="cb5-91"><a href="#cb5-91"></a></span>
+<span id="cb5-92"><a href="#cb5-92"></a>prometheus_data_ratio_sel.tib &lt;-<span class="st"> </span>prometheus_data_ratio.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., collection, filtername, capillary, rowid, NTF2group, ligandgroup, PHvalues, conc_uM, <span class="kw">contains</span>(<span class="st">&quot;ip&quot;</span>), data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., ip_standard) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(ip_selected) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., value_corrected) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">replace_na</span>(., <span class="kw">list</span>(<span class="dt">ip_selected =</span> <span class="st">&quot;replaceme&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ip_select =</span> <span class="kw">case_when</span>(ip_selected <span class="op">==</span><span class="st"> &quot;replaceme&quot;</span> <span class="op">~</span><span class="st"> </span>ip_standard, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>ip_selected)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ip_value =</span> <span class="kw">case_when</span>(ip_select <span class="op">==</span><span class="st"> &quot;ip1&quot;</span> <span class="op">~</span><span class="st"> </span>ip1, ip_select <span class="op">==</span><span class="st"> &quot;ip2&quot;</span> <span class="op">~</span><span class="st"> </span>ip2, ip_select <span class="op">==</span><span class="st"> &quot;ip3&quot;</span> <span class="op">~</span><span class="st"> </span>ip3, ip_select <span class="op">==</span><span class="st"> &quot;ip4&quot;</span> <span class="op">~</span><span class="st"> </span>ip4, ip_select <span class="op">==</span><span class="st"> &quot;ip5&quot;</span> <span class="op">~</span><span class="st"> </span>ip5, ip_select <span class="op">==</span><span class="st"> &quot;ip6&quot;</span> <span class="op">~</span><span class="st"> </span>ip6, ip_select <span class="op">==</span><span class="st"> &quot;ip7&quot;</span> <span class="op">~</span><span class="st"> </span>ip7, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span><span class="dv">0</span>))</span></code></pre></div>
+</div>
+<div id="supplementary-nanodsf-plots" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.3</span> Supplementary nanoDSF plots<a href="#supplementary-nanodsf-plots" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>prometheus_data_ratio_sel_Der &lt;-<span class="st"> </span>prometheus_data_ratio_sel.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">plotgroup =</span> <span class="kw">paste</span>(NTF2group, ligandgroup, PHvalues, conc_uM, rowid, collection, <span class="dt">sep =</span> <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., conc_uM <span class="op">&gt;</span><span class="st"> </span><span class="dv">150</span>, collection <span class="op">==</span><span class="st"> &quot;XH1&quot;</span> <span class="op">|</span><span class="st"> </span>collection <span class="op">==</span><span class="st"> &quot;XH2&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(., ip_value)</span>
+<span id="cb6-2"><a href="#cb6-2"></a>  </span>
+<span id="cb6-3"><a href="#cb6-3"></a>prometheus_data_ratio_sel_plotDer &lt;-<span class="st"> </span>prometheus_data_ratio_sel_Der <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., Temp <span class="op">&lt;</span><span class="st"> </span><span class="dv">70</span>) <span class="op">%&gt;%</span><span class="st">  </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x=</span>Temp, <span class="dt">y=</span>ratio, <span class="dt">colour =</span> <span class="kw">factor</span>(PHvalues), <span class="dt">group =</span>  plotgroup)) <span class="op">+</span></span>
+<span id="cb6-4"><a href="#cb6-4"></a><span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb6-5"><a href="#cb6-5"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb6-6"><a href="#cb6-6"></a><span class="st">  </span><span class="kw">facet_grid</span>(ligandgroup<span class="op">+</span>PHvalues <span class="op">~</span><span class="st"> </span>NTF2group, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb6-7"><a href="#cb6-7"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_selDer.jpeg&quot;</span>, prometheus_data_ratio_sel_plotDer,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">240</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb6-8"><a href="#cb6-8"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_selDer.ps&quot;</span>, prometheus_data_ratio_sel_plotDer,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">240</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>prometheus_data_ratio_sel_PlotDataPoints &lt;-<span class="st"> </span>prometheus_data_ratio_sel_Der <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">Temp =</span> ip_value) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>(., <span class="kw">aes</span>(<span class="dt">x=</span>Temp, <span class="dt">y=</span>PHvalues, <span class="dt">colour =</span> <span class="kw">factor</span>(PHvalues), <span class="dt">group =</span>  plotgroup)) <span class="op">+</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb7-3"><a href="#cb7-3"></a><span class="st">  </span><span class="kw">theme_minimal</span>() <span class="op">+</span><span class="st"> </span></span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="dv">20</span>,<span class="dv">70</span>), <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">9</span>,<span class="dv">4</span>)) <span class="op">+</span></span>
+<span id="cb7-5"><a href="#cb7-5"></a><span class="st">  </span><span class="kw">scale_y_reverse</span>() <span class="op">+</span></span>
+<span id="cb7-6"><a href="#cb7-6"></a><span class="st">  </span><span class="kw">facet_grid</span>(ligandgroup <span class="op">~</span><span class="st"> </span>NTF2group, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb7-7"><a href="#cb7-7"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_selPoints.jpeg&quot;</span>, prometheus_data_ratio_sel_PlotDataPoints,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb7-8"><a href="#cb7-8"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_selPoints.ps&quot;</span>, prometheus_data_ratio_sel_PlotDataPoints,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>prometheus_data_ratio_sel_PlotDataPointsComb &lt;-<span class="st"> </span>egg<span class="op">::</span><span class="kw">ggarrange</span>(prometheus_data_ratio_sel_plotDer, prometheus_data_ratio_sel_PlotDataPoints, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>, <span class="dt">heights =</span> <span class="kw">c</span>(<span class="dv">4</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p><img src="index_files/figure-html/plotDervCombined-1.png" width="672" /></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">ggsave</span>(<span class="dt">file=</span><span class="st">&quot;prometheus_selPoints_combined.jpeg&quot;</span>, <span class="dt">plot=</span>prometheus_data_ratio_sel_PlotDataPointsComb,<span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">240</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">ggsave</span>(<span class="dt">file=</span><span class="st">&quot;prometheus_selPoints_combined.ps&quot;</span>, <span class="dt">plot=</span>prometheus_data_ratio_sel_PlotDataPointsComb,<span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">240</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="DerPlotCaption" class="figure-box">
+<p>nanoDSF 1st derivative and Tm value plots, assembled for Supplementary Figure S6.</p>
+</div>
+</div>
+<div id="lineplot-comparison-different-ph-values" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.4</span> Lineplot comparison different pH values<a href="#lineplot-comparison-different-ph-values" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>selected for ms.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>prometheus_T_preboxplot &lt;-<span class="st"> </span>prometheus_data_ratio_sel.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">boxgroup =</span> <span class="kw">paste</span>(NTF2group, PHvalues, ligandgroup, collection, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., conc_uM <span class="op">&gt;</span><span class="st"> </span><span class="dv">150</span>, collection <span class="op">==</span><span class="st"> &quot;XH1&quot;</span> <span class="op">|</span><span class="st"> </span>collection <span class="op">==</span><span class="st"> &quot;XH2&quot;</span>) <span class="co"># %&gt;% dplyr::select(., sampleID, capillary, ip_value)</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a>prometheus_T_preboxplot_mean &lt;-<span class="st"> </span>prometheus_T_preboxplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">linegroup =</span> <span class="kw">paste</span>(NTF2group, PHvalues, ligandgroup, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(., linegroup, PHvalues, NTF2group, ligandgroup) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">ip_sd =</span> <span class="kw">sd</span>(ip_value, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), <span class="dt">ip_value =</span> <span class="kw">mean</span>(ip_value, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), <span class="dt">ip_max =</span> ip_value<span class="op">+</span>ip_sd, <span class="dt">ip_min =</span> ip_value<span class="op">-</span>ip_sd) <span class="co">#%&gt;% dplyr::arrange(., meas_type, pHvalue, NTF2group, boxgroup )</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a></span>
+<span id="cb10-5"><a href="#cb10-5"></a>prometheus_T_line_preplot &lt;-<span class="st">  </span>prometheus_T_preboxplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">linegroup =</span> <span class="kw">paste</span>(NTF2group, PHvalues, ligandgroup, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) </span>
+<span id="cb10-6"><a href="#cb10-6"></a></span>
+<span id="cb10-7"><a href="#cb10-7"></a>prometheus_T_lineplot &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb10-8"><a href="#cb10-8"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> prometheus_T_preboxplot_mean, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> ip_value, <span class="dt">group =</span> linegroup, <span class="dt">colour =</span> ligandgroup), <span class="dt">size =</span> <span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb10-9"><a href="#cb10-9"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">data =</span> prometheus_T_preboxplot_mean, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> ip_value, <span class="dt">colour =</span> ligandgroup), <span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb10-10"><a href="#cb10-10"></a><span class="st">  </span><span class="kw">geom_linerange</span>(<span class="dt">data =</span> prometheus_T_preboxplot_mean, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">ymin =</span> ip_min, <span class="dt">ymax =</span> ip_max , <span class="dt">colour =</span> ligandgroup)) <span class="op">+</span></span>
+<span id="cb10-11"><a href="#cb10-11"></a><span class="st">  </span><span class="co">#scale_shape_manual(values = c(1,2)) +</span></span>
+<span id="cb10-12"><a href="#cb10-12"></a><span class="st">  </span><span class="co">#geom_jitter(aes(colour = factor(meas_type)), stat = &quot;identity&quot;, width = 0.1) +</span></span>
+<span id="cb10-13"><a href="#cb10-13"></a><span class="st">  </span><span class="co">#facet_grid(. ~ ., scales = &quot;free_y&quot;) +</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a><span class="st">  </span><span class="co">#scale_color_manual(values = )</span></span>
+<span id="cb10-15"><a href="#cb10-15"></a><span class="st">  </span><span class="co">#cale_color_aaas() +</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb10-17"><a href="#cb10-17"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb10-18"><a href="#cb10-18"></a><span class="st">  </span><span class="co">#scale_x_discrete() +</span></span>
+<span id="cb10-19"><a href="#cb10-19"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;Temperature: °C&quot;</span>) <span class="op">+</span></span>
+<span id="cb10-20"><a href="#cb10-20"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">4.5</span>,<span class="dv">9</span>), <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">25</span>, <span class="dv">65</span>)) <span class="op">+</span></span>
+<span id="cb10-21"><a href="#cb10-21"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb10-22"><a href="#cb10-22"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb10-23"><a href="#cb10-23"></a><span class="st">   </span><span class="co">#scale_color_grey() +</span></span>
+<span id="cb10-24"><a href="#cb10-24"></a><span class="st">  </span><span class="co">#scale_fill_grey() +</span></span>
+<span id="cb10-25"><a href="#cb10-25"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb10-26"><a href="#cb10-26"></a><span class="st">  </span><span class="kw">facet_grid</span>(. <span class="op">~</span><span class="st"> </span>NTF2group)</span>
+<span id="cb10-27"><a href="#cb10-27"></a><span class="kw">print</span>(prometheus_T_lineplot)</span></code></pre></div>
+<p><img src="index_files/figure-html/lineplotxPROM-1.png" width="672" /></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_T_lineplot.jpeg&quot;</span>, prometheus_T_lineplot,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">120</span>, <span class="dt">height =</span> <span class="dv">40</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_T_lineplot.ps&quot;</span>, prometheus_T_lineplot,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">120</span>, <span class="dt">height =</span> <span class="dv">40</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="dTmPlotCaption" class="figure-box">
+<p>dTm values at the tested pH values, for Figure 4.</p>
+</div>
+</div>
+<div id="boxplot-of-differences" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.5</span> boxplot of differences<a href="#boxplot-of-differences" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>prometheus_T_diff_preboxplot &lt;-<span class="st"> </span>prometheus_T_preboxplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">linegroup =</span> <span class="kw">paste</span>(NTF2group, PHvalues, ligandgroup, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">group_by</span>(., linegroup, PHvalues, NTF2group, ligandgroup) </span>
+<span id="cb12-2"><a href="#cb12-2"></a></span>
+<span id="cb12-3"><a href="#cb12-3"></a>prometheus_T_diff_sub &lt;-<span class="st"> </span>prometheus_T_diff_preboxplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">ip_mean =</span>  <span class="kw">mean</span>(ip_value, <span class="dt">na.rm =</span><span class="ot">TRUE</span>), <span class="dt">ip_sd =</span>  <span class="kw">sd</span>(ip_value, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>(.) <span class="co">#%&gt;% dplyr::select(., -ligand)</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a></span>
+<span id="cb12-5"><a href="#cb12-5"></a>prometheus_T_norm &lt;-<span class="st"> </span>prometheus_T_diff_sub <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., ligandgroup <span class="op">==</span><span class="st"> &quot;aNONE&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., PHvalues, NTF2group, <span class="dt">ip_norm =</span> ip_mean)</span>
+<span id="cb12-6"><a href="#cb12-6"></a></span>
+<span id="cb12-7"><a href="#cb12-7"></a>prometheus_T_diff_preboxplot &lt;-<span class="st"> </span>prometheus_T_diff_preboxplot <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., prometheus_T_norm) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ip_diff =</span> ip_value <span class="op">-</span><span class="st"> </span>ip_norm) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., ip_diff)</span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co">#%&gt;% </span></span></code></pre></div>
+</div>
+<div id="columnplot-of-t-differences" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.6</span> Columnplot of T-differences<a href="#columnplot-of-t-differences" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>prometheus_T_diff_precolpolot &lt;-<span class="st"> </span>prometheus_T_diff_preboxplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., ip_diff)</span>
+<span id="cb13-2"><a href="#cb13-2"></a>prometheus_T_mean_precolpolot &lt;-<span class="st"> </span>prometheus_T_diff_precolpolot <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(., ip_diff) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">ip_sd =</span>  <span class="kw">sd</span>(ip_diff, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), <span class="dt">ip_diff =</span>  <span class="kw">mean</span>(ip_diff, <span class="dt">na.rm =</span><span class="ot">TRUE</span>), <span class="dt">ip_min =</span> ip_diff <span class="op">-</span><span class="st"> </span>ip_sd, <span class="dt">ip_max =</span> ip_diff <span class="op">+</span><span class="st"> </span>ip_sd, <span class="dt">nexp =</span> <span class="kw">n</span>()) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>()</span>
+<span id="cb13-3"><a href="#cb13-3"></a></span>
+<span id="cb13-4"><a href="#cb13-4"></a>prometheus_Tdiff_colplot &lt;-<span class="st">  </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">data =</span> prometheus_T_mean_precolpolot, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> ip_diff, <span class="dt">fill =</span> <span class="kw">factor</span>(ligandgroup), <span class="dt">group =</span> linegroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="st">  </span><span class="co">#geom_jitter(data = prometheus_T_mean_precolpolot %&gt;% dplyr::filter(., ligandgroup != &quot;aNONE&quot;) ,aes(x = factor(PHvalues), y = ip_diff, colour = factor(ligandgroup)), stat = &quot;identity&quot;, width = 0.1, shape = 21, size = 2, fill = &quot;white&quot;) +</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> prometheus_T_mean_precolpolot, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">ymin =</span> ip_min, <span class="dt">ymax =</span> ip_max, <span class="dt">group =</span> linegroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="st">  </span><span class="co">#facet_grid(. ~ ., scales = &quot;free_y&quot;) +</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="st">  </span><span class="co">#scale_color_manual(values = )</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="st">  </span><span class="co">#scale_fill_aaas() +</span></span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb13-12"><a href="#cb13-12"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="st">  </span><span class="co">#scale_x_discrete() +</span></span>
+<span id="cb13-14"><a href="#cb13-14"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">4.5</span>,<span class="dv">9</span>)) <span class="op">+</span></span>
+<span id="cb13-15"><a href="#cb13-15"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;DTemperature: °C&quot;</span>) <span class="op">+</span></span>
+<span id="cb13-16"><a href="#cb13-16"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb13-17"><a href="#cb13-17"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb13-18"><a href="#cb13-18"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb13-19"><a href="#cb13-19"></a><span class="st">  </span><span class="kw">facet_grid</span>(. <span class="op">~</span><span class="st"> </span>NTF2group)</span>
+<span id="cb13-20"><a href="#cb13-20"></a><span class="kw">print</span>(prometheus_Tdiff_colplot)</span></code></pre></div>
+<p><img src="index_files/figure-html/columnplotProm-1.png" width="672" /></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_Tdiff_colplot.jpeg&quot;</span>, prometheus_Tdiff_colplot,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">60</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_Tdiff_colplot.ps&quot;</span>, prometheus_Tdiff_colplot,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">160</span>, <span class="dt">height =</span> <span class="dv">60</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="dTmPlotCaption" class="figure-box">
+<p>(ligand-apo)dTm values at the tested pH values, for Figure 4.</p>
+</div>
+</div>
+<div id="lineplot-concentration-series" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.7</span> Lineplot concentration-series<a href="#lineplot-concentration-series" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>prometheus_Tconc_line_preplot &lt;-<span class="st">  </span>prometheus_data_ratio_sel.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(collection <span class="op">==</span><span class="st"> &quot;XH2&quot;</span>) </span>
+<span id="cb15-2"><a href="#cb15-2"></a></span>
+<span id="cb15-3"><a href="#cb15-3"></a>prometheus_Tconc_line_mean &lt;-<span class="st">  </span>prometheus_Tconc_line_preplot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., NTF2group, ligandgroup, PHvalues) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., conc_uM <span class="op">&lt;</span><span class="st"> </span><span class="dv">1</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">ip_min =</span> <span class="kw">mean</span>(ip_value, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>))</span>
+<span id="cb15-4"><a href="#cb15-4"></a></span>
+<span id="cb15-5"><a href="#cb15-5"></a>prometheus_Tconc_line_preplot &lt;-<span class="st"> </span>prometheus_Tconc_line_preplot <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., prometheus_Tconc_line_mean) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ip_diff =</span> ip_value <span class="op">-</span><span class="st"> </span>ip_min) </span>
+<span id="cb15-6"><a href="#cb15-6"></a></span>
+<span id="cb15-7"><a href="#cb15-7"></a>panel_tribble &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>ligandgroup, <span class="op">~</span>panelid, <span class="op">~</span>PHvalues, <span class="kw">c</span>(<span class="st">&quot;aNONE&quot;</span>, <span class="st">&quot;bUSP&quot;</span>, <span class="st">&quot;cCAP&quot;</span>), <span class="st">&quot;Titration&quot;</span>, <span class="fl">5.1</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(ligandgroup)</span>
+<span id="cb15-8"><a href="#cb15-8"></a></span>
+<span id="cb15-9"><a href="#cb15-9"></a>prometheus_Tconc_line_preplot_selected &lt;-<span class="st"> </span>prometheus_Tconc_line_preplot <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., PHvalues <span class="op">&lt;</span><span class="st"> </span><span class="fl">5.2</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">full_join</span>(., panel_tribble)</span>
+<span id="cb15-10"><a href="#cb15-10"></a></span>
+<span id="cb15-11"><a href="#cb15-11"></a>prometheus_Tconc_lineplot &lt;-<span class="st"> </span><span class="kw">ggplot</span>(<span class="dt">data =</span> prometheus_Tconc_line_preplot_selected, <span class="kw">aes</span>(<span class="dt">x =</span> conc_uM, <span class="dt">y =</span> ip_diff, <span class="dt">colour =</span> ligandgroup), <span class="dt">size =</span><span class="fl">1.5</span>) <span class="op">+</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a><span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span></span>
+<span id="cb15-13"><a href="#cb15-13"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">data =</span> . <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., NTF2group, ligandgroup, PHvalues, conc_uM, panelid) <span class="op">%&gt;%</span><span class="st">  </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">ip_diff =</span> <span class="kw">mean</span>(ip_diff), <span class="dt">na.rm =</span> <span class="ot">TRUE</span>), <span class="dt">size =</span> <span class="dv">1</span>) <span class="op">+</span></span>
+<span id="cb15-14"><a href="#cb15-14"></a><span class="st">  </span><span class="co">#geom_line(aes(group = linegroup)) +</span></span>
+<span id="cb15-15"><a href="#cb15-15"></a><span class="st">  </span><span class="co">#scale_shape_manual(values = c(1,2)) +</span></span>
+<span id="cb15-16"><a href="#cb15-16"></a><span class="st">  </span><span class="co">#geom_jitter(aes(colour = factor(meas_type)), stat = &quot;identity&quot;, width = 0.1) +</span></span>
+<span id="cb15-17"><a href="#cb15-17"></a><span class="st">  </span><span class="co">#facet_grid(. ~ ., scales = &quot;free_y&quot;) +</span></span>
+<span id="cb15-18"><a href="#cb15-18"></a><span class="st">  </span><span class="co">#scale_color_manual(values = )</span></span>
+<span id="cb15-19"><a href="#cb15-19"></a><span class="st">  </span><span class="co">#cale_color_aaas() +</span></span>
+<span id="cb15-20"><a href="#cb15-20"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb15-21"><a href="#cb15-21"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb15-22"><a href="#cb15-22"></a><span class="st">  </span><span class="co">#scale_x_discrete() +</span></span>
+<span id="cb15-23"><a href="#cb15-23"></a><span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span></span>
+<span id="cb15-24"><a href="#cb15-24"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;Temperature: °C&quot;</span>) <span class="op">+</span></span>
+<span id="cb15-25"><a href="#cb15-25"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">0.5</span>, <span class="dv">200</span>) , <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="op">-</span><span class="dv">5</span>, <span class="dv">20</span>)) <span class="op">+</span></span>
+<span id="cb15-26"><a href="#cb15-26"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb15-27"><a href="#cb15-27"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb15-28"><a href="#cb15-28"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">legend.position =</span> <span class="st">&quot;null&quot;</span>) <span class="op">+</span></span>
+<span id="cb15-29"><a href="#cb15-29"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb15-30"><a href="#cb15-30"></a><span class="st">  </span><span class="kw">facet_grid</span>(PHvalues <span class="op">~</span><span class="st"> </span>panelid)</span>
+<span id="cb15-31"><a href="#cb15-31"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_Tconc_lineplot.jpeg&quot;</span>, prometheus_Tconc_lineplot,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">45</span>, <span class="dt">height =</span> <span class="dv">50</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb15-32"><a href="#cb15-32"></a><span class="kw">ggsave</span>(<span class="st">&quot;./prometheus_Tconc_lineplot.ps&quot;</span>, prometheus_Tconc_lineplot,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">45</span>, <span class="dt">height =</span> <span class="dv">50</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="dTmConcCaption" class="figure-box">
+<p>Change of Tm versus ligand concentration, for Figure 4. Titration data were obtained at two pH-values of 5.1 and 6, but the absolute stabilization effect of Caprin-1 binding was very low, not allowing us to derive affinity values confidently. Therefore we only selected the stabilization data at pH 5.1 following the guidelines and isothermal analysis strategy suggested by <a href="https://spc.embl-hamburg.de/">EMBL</a>.</p>
+</div>
+</div>
+<div id="final-figures-nanodsf" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.8</span> Final Figures nanoDSF<a href="#final-figures-nanodsf" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="main" class="section level3 hasAnchor">
+<h3><span class="header-section-number">2.8.1</span> main<a href="#main" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a><span class="co">#prometheus_Tdiff_colplot_ggplot &lt;- ggpubr::ggarrange(prometheus_T_lineplot, prometheus_Tdiff_colplot, nrow = 2, ncol = 1, legend = &quot;none&quot;, heights = c(1,1), align = &quot;hv&quot;)</span></span>
+<span id="cb16-2"><a href="#cb16-2"></a></span>
+<span id="cb16-3"><a href="#cb16-3"></a>prometheus_Tdiff_colplot_ggplot &lt;-<span class="st"> </span>egg<span class="op">::</span><span class="kw">ggarrange</span>(prometheus_T_lineplot, prometheus_Tdiff_colplot, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>, <span class="dt">heights =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+<p><img src="index_files/figure-html/FigAssemblySupplementProm-1.png" width="672" /></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">ggsave</span>(<span class="dt">file=</span><span class="st">&quot;prometheus_Tdiff_colplot_arranged.jpeg&quot;</span>, <span class="dt">plot=</span>prometheus_Tdiff_colplot_ggplot,<span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="kw">ggsave</span>(<span class="dt">file=</span><span class="st">&quot;prometheus_Tdiff_colplot_arranged.ps&quot;</span>, <span class="dt">plot=</span>prometheus_Tdiff_colplot_ggplot,<span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="dTmMainFigCaption" class="figure-box">
+<p>Pre-assembled plots for Figure 4.</p>
+</div>
+</div>
+</div>
+<div id="espc-analysis-of-nanodsf-titration-data" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.9</span> eSPC analysis of nanoDSF titration data<a href="#espc-analysis-of-nanodsf-titration-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Titration data were analysed following the guidelines and analysis pipelines suggested by <a href="https://spc.embl-hamburg.de/">EMBL</a>.<br />
+the analysed data were imported for visualization.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>eSPC_list =<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">path =</span> <span class="st">&quot;./data_eSPC&quot;</span>, <span class="dt">pattern =</span> <span class="st">&quot;*&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">include.dirs =</span> <span class="ot">TRUE</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb18-2"><a href="#cb18-2"></a>eSPC_list.tib &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(eSPC_list)</span>
+<span id="cb18-3"><a href="#cb18-3"></a></span>
+<span id="cb18-4"><a href="#cb18-4"></a>eSPC_colnames &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>filename, <span class="op">~</span>type,</span>
+<span id="cb18-5"><a href="#cb18-5"></a>            <span class="st">&quot;Fitted_Parameters_FractionUnfolded.csv&quot;</span>, <span class="st">&quot;paramters&quot;</span>,</span>
+<span id="cb18-6"><a href="#cb18-6"></a>           <span class="st">&quot;fraction_unfolded_data.csv&quot;</span>, <span class="st">&quot;data&quot;</span>,</span>
+<span id="cb18-7"><a href="#cb18-7"></a>          <span class="st">&quot;fraction_unfolded_fitting_data.csv&quot;</span>, <span class="st">&quot;fit&quot;</span></span>
+<span id="cb18-8"><a href="#cb18-8"></a>)</span>
+<span id="cb18-9"><a href="#cb18-9"></a></span>
+<span id="cb18-10"><a href="#cb18-10"></a>eSPC_data.tib &lt;-<span class="st"> </span>eSPC_list.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">filterme =</span> <span class="kw">str_detect</span>(value, <span class="st">&quot;Fitted_Parameters_FractionUnfolded|fraction_unfolded_data|fraction_unfolded_fitting_data&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., value, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;dot&quot;</span>, <span class="st">&quot;folder&quot;</span>, <span class="st">&quot;sample&quot;</span>, <span class="st">&quot;filename&quot;</span>), <span class="dt">sep =</span> <span class="st">&quot;</span><span class="ch">\\</span><span class="st">/&quot;</span>, <span class="dt">remove=</span><span class="ot">FALSE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., filterme <span class="op">==</span><span class="st"> </span><span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">imported =</span> purrr<span class="op">::</span><span class="kw">map</span>(value, <span class="op">~</span><span class="kw">vroom</span>(.))) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(.,eSPC_colnames) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., sample, imported, type) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_wider</span>(., <span class="dt">values_from =</span> imported, <span class="dt">names_from =</span> type)</span>
+<span id="cb18-11"><a href="#cb18-11"></a></span>
+<span id="cb18-12"><a href="#cb18-12"></a>eSPC_preplot.tib &lt;-<span class="st"> </span>eSPC_data.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">separate</span>(., sample, <span class="dt">into =</span> <span class="kw">c</span>(<span class="st">&quot;dataset&quot;</span>, <span class="st">&quot;ligand&quot;</span>, <span class="st">&quot;pHstring&quot;</span>, <span class="st">&quot;meas_type&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">NTF2 =</span> <span class="st">&quot;NTF2&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">boxgroup =</span> <span class="kw">paste</span>(NTF2, pHstring, ligand, meas_type, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">NTF2group =</span> <span class="kw">case_when</span>(NTF2 <span class="op">==</span><span class="st"> &quot;NTF2&quot;</span> <span class="op">~</span><span class="st"> &quot;aNTF2&quot;</span>, NTF2 <span class="op">==</span><span class="st"> &quot;H31A&quot;</span> <span class="op">~</span><span class="st"> &quot;bH31A&quot;</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;c&quot;</span>) ) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ligandex =</span> <span class="kw">str_extract</span>(ligand, <span class="st">&quot;CAP|USP|NONE&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">ligandgroup =</span> <span class="kw">case_when</span>(ligandex <span class="op">==</span><span class="st"> &quot;NONE&quot;</span> <span class="op">~</span><span class="st"> &quot;aNONE&quot;</span>, ligandex <span class="op">==</span><span class="st"> &quot;USP&quot;</span> <span class="op">~</span><span class="st"> &quot;bUSP&quot;</span>, ligandex <span class="op">==</span><span class="st"> &quot;CAP&quot;</span> <span class="op">~</span><span class="st"> &quot;cCAP&quot;</span>), <span class="dt">linegroup =</span>  <span class="kw">paste</span>(NTF2, pHstring, ligandgroup, meas_type, <span class="dt">sep =</span> <span class="st">&quot;_&quot;</span>)) </span>
+<span id="cb18-13"><a href="#cb18-13"></a></span>
+<span id="cb18-14"><a href="#cb18-14"></a></span>
+<span id="cb18-15"><a href="#cb18-15"></a>eSPC_sel_preplot.tib &lt;-<span class="st"> </span>eSPC_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., dataset <span class="op">==</span><span class="st"> &quot;data2&quot;</span>, pHstring <span class="op">==</span><span class="st"> &quot;PH5&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a>eSPC_Tconc_lineplot &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> eSPC_sel_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>paramters, <span class="op">-</span>fit) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data), <span class="kw">aes</span>(<span class="dt">x =</span> conc, <span class="dt">y =</span> fu, <span class="dt">group =</span> ts, <span class="dt">colour =</span> ts)) <span class="op">+</span></span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">data =</span> eSPC_sel_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>paramters, <span class="op">-</span>data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., fit), <span class="kw">aes</span>(<span class="dt">x =</span> conc, <span class="dt">y =</span> fu, <span class="dt">group =</span> ts, <span class="dt">colour =</span> ts)) <span class="op">+</span></span>
+<span id="cb19-4"><a href="#cb19-4"></a><span class="st">  </span><span class="co">#geom_point(aes(group = linegroup)) +</span></span>
+<span id="cb19-5"><a href="#cb19-5"></a><span class="st">  </span><span class="co">#scale_shape_manual(values = c(1,2)) +</span></span>
+<span id="cb19-6"><a href="#cb19-6"></a><span class="st">  </span><span class="co">#geom_jitter(aes(colour = factor(meas_type)), stat = &quot;identity&quot;, width = 0.1) +</span></span>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="st">  </span><span class="co">#facet_grid(. ~ ., scales = &quot;free_y&quot;) +</span></span>
+<span id="cb19-8"><a href="#cb19-8"></a><span class="st">  </span><span class="co">#scale_color_manual(values = )</span></span>
+<span id="cb19-9"><a href="#cb19-9"></a><span class="st">  </span><span class="co">#cale_color_aaas() +</span></span>
+<span id="cb19-10"><a href="#cb19-10"></a><span class="st">  </span><span class="co">#scale_color_grey() +</span></span>
+<span id="cb19-11"><a href="#cb19-11"></a><span class="st">  </span><span class="co">#scale_x_discrete() +</span></span>
+<span id="cb19-12"><a href="#cb19-12"></a><span class="st">  </span><span class="kw">scale_x_log10</span>() <span class="op">+</span></span>
+<span id="cb19-13"><a href="#cb19-13"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">name =</span> <span class="st">&quot;fu&quot;</span>) <span class="op">+</span></span>
+<span id="cb19-14"><a href="#cb19-14"></a><span class="st">  </span><span class="co">#coord_cartesian(ylim = c(30, 60)) +</span></span>
+<span id="cb19-15"><a href="#cb19-15"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb19-16"><a href="#cb19-16"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb19-17"><a href="#cb19-17"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb19-18"><a href="#cb19-18"></a><span class="st">  </span><span class="kw">facet_grid</span>(pHstring <span class="op">~</span><span class="st"> </span>ligandgroup, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb19-19"><a href="#cb19-19"></a>  <span class="kw">print</span>(eSPC_Tconc_lineplot)</span></code></pre></div>
+<p><img src="index_files/figure-html/eSPCfitplot-1.png" width="672" /></p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./eSPC_lineplot.jpeg&quot;</span>, eSPC_Tconc_lineplot,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">120</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./eSPC_lineplot.ps&quot;</span>, eSPC_Tconc_lineplot,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">120</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="dTmConcCaption" class="figure-box">
+<p>Change of Tm versus ligand concentration, for Figure 4. Titration data were obtained at two pH-values of 5.1 and 6, but the absolute stabilization effect of Caprin-1 binding was very low, not allowing us to derive affinity values confidently. Therefore we only selected the stabilization data at pH 5.1 following the guidelines and analysis pipelines suggested by <a href="https://spc.embl-hamburg.de/">EMBL</a>.</p>
+</div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>eSPC_Tconc_kds_plot &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="st">  </span><span class="kw">geom_point</span>(<span class="dt">data =</span> eSPC_sel_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">parameters =</span> purrr<span class="op">::</span><span class="kw">map</span>(paramters, <span class="op">~</span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="kw">everything</span>(), <span class="dt">Kd =</span> <span class="kw">contains</span>(<span class="st">&quot;Kd&quot;</span>)))) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>data, <span class="op">-</span>fit, <span class="op">-</span>paramters) <span class="op">%&gt;%</span><span class="st">  </span><span class="kw">unnest</span>(., parameters), <span class="kw">aes</span>(<span class="dt">x =</span> ligand, <span class="dt">y =</span> Kd, <span class="dt">group =</span> temperature, <span class="dt">colour =</span> temperature)) <span class="op">+</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="st">  </span><span class="kw">scale_y_log10</span>(<span class="dt">name =</span> <span class="st">&quot;Kd /uM&quot;</span>, <span class="dt">labels =</span> <span class="cf">function</span>(breaks) ((breaks<span class="op">*</span><span class="dv">10</span><span class="op">^</span><span class="dv">6</span>))) <span class="op">+</span></span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="st">  </span><span class="co">#scale_y_continuous(name = &quot;Kd&quot;) +</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="st">  </span><span class="co">#coord_cartesian(ylim = c(30, 60)) +</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="st">  </span><span class="kw">facet_grid</span>(pHstring <span class="op">~</span><span class="st"> </span>ligandgroup, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb21-10"><a href="#cb21-10"></a><span class="kw">print</span>(eSPC_Tconc_kds_plot)</span></code></pre></div>
+<p><img src="index_files/figure-html/eSPCdvalues-1.png" width="672" /></p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./eSPC_Kd_plot.jpeg&quot;</span>, eSPC_Tconc_kds_plot,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">120</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./eSPC_Kd_plot.ps&quot;</span>, eSPC_Tconc_kds_plot,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">120</span>, <span class="dt">height =</span> <span class="dv">90</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="KdConcCaption" class="figure-box">
+<p>Affinities obtained by isothermal analysis at different temperatures.</p>
+</div>
+</div>
+<div id="export-data-for-comparison" class="section level2 hasAnchor">
+<h2><span class="header-section-number">2.10</span> export data for comparison<a href="#export-data-for-comparison" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>eSPC_PHvalues &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>pHstring, <span class="op">~</span>PHvalues,</span>
+<span id="cb23-2"><a href="#cb23-2"></a>                         <span class="st">&quot;PH5&quot;</span>, <span class="fl">5.1</span>)</span>
+<span id="cb23-3"><a href="#cb23-3"></a></span>
+<span id="cb23-4"><a href="#cb23-4"></a>prometheus_T_mean_export &lt;-<span class="st"> </span>prometheus_T_mean_precolpolot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., NTF2group, ligandgroup,  PHvalues, <span class="dt">value =</span> ip_diff, <span class="dt">value_min =</span> ip_min, <span class="dt">value_max =</span> ip_max) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">method =</span> <span class="st">&quot;bnDSF&quot;</span>, <span class="dt">value_type =</span> <span class="st">&quot;dTm&quot;</span>)</span>
+<span id="cb23-5"><a href="#cb23-5"></a></span>
+<span id="cb23-6"><a href="#cb23-6"></a>eSPC_export &lt;-<span class="st"> </span>eSPC_sel_preplot.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">parameters =</span> purrr<span class="op">::</span><span class="kw">map</span>(paramters, <span class="op">~</span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="kw">everything</span>(), <span class="dt">Kd =</span> <span class="kw">contains</span>(<span class="st">&quot;Kd&quot;</span>)))) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">-</span>data, <span class="op">-</span>fit, <span class="op">-</span>paramters) <span class="op">%&gt;%</span><span class="st">  </span><span class="kw">unnest</span>(., parameters) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., eSPC_PHvalues) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., NTF2group, ligandgroup, PHvalues, Kd, temperature) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., NTF2group, ligandgroup, PHvalues) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">value =</span> <span class="kw">mean</span>(Kd), <span class="dt">value_min =</span> <span class="kw">min</span>(Kd), <span class="dt">value_max =</span> <span class="kw">max</span>(Kd)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate_at</span>(<span class="kw">c</span>(<span class="st">&quot;value&quot;</span>, <span class="st">&quot;value_min&quot;</span>, <span class="st">&quot;value_max&quot;</span>), log10) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">method =</span> <span class="st">&quot;bnDSF&quot;</span>, <span class="dt">value_type =</span> <span class="st">&quot;affinity&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">NTF2group =</span> <span class="kw">str_replace_all</span>(NTF2group, <span class="st">&quot;aNTF2&quot;</span>, <span class="st">&quot;aWT&quot;</span>))</span>
+<span id="cb23-7"><a href="#cb23-7"></a></span>
+<span id="cb23-8"><a href="#cb23-8"></a>nanoDSF_export &lt;-<span class="st"> </span>prometheus_T_mean_export <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">full_join</span>(., eSPC_export)</span>
+<span id="cb23-9"><a href="#cb23-9"></a></span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="kw">saveRDS</span>(nanoDSF_export, <span class="st">&quot;./nanoDSF_export.rds&quot;</span>)</span></code></pre></div>
+</div>
+</div>
+<div id="analysis-of-immunoprecipitation-data" class="section level1 hasAnchor">
+<h1><span class="header-section-number">3</span> Analysis of immunoprecipitation data<a href="#analysis-of-immunoprecipitation-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Immunoprecipiation data collected by MD Panas. Data were imported and visualized for easier comparison with the other data.<br />
+Note: Data were labeled as pulldowns, but are in fact immuno-precipitation.</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>pulldown_list =<span class="st"> </span><span class="kw">list.files</span>(<span class="dt">path =</span> <span class="st">&quot;./data_pulldowns&quot;</span>, <span class="dt">pattern =</span> <span class="st">&quot;*&quot;</span>, <span class="dt">recursive =</span> <span class="ot">TRUE</span>, <span class="dt">include.dirs =</span> <span class="ot">TRUE</span>, <span class="dt">full.names =</span> <span class="ot">TRUE</span>)</span>
+<span id="cb24-2"><a href="#cb24-2"></a>pulldown_list.tib &lt;-<span class="st"> </span><span class="kw">as_tibble</span>(pulldown_list)</span>
+<span id="cb24-3"><a href="#cb24-3"></a></span>
+<span id="cb24-4"><a href="#cb24-4"></a>pulldown_coladd &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>filtername, <span class="op">~</span>datasetid, <span class="op">~</span>range, <span class="op">~</span>colnames, <span class="op">~</span>collection,</span>
+<span id="cb24-5"><a href="#cb24-5"></a>                          <span class="st">&quot;pulldowns_combined.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:E71&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;plate&quot;</span>, <span class="st">&quot;PHvalues&quot;</span>, <span class="st">&quot;value&quot;</span>, <span class="st">&quot;ligandgroup&quot;</span>, <span class="st">&quot;NTF2group&quot;</span>), <span class="st">&quot;MP2&quot;</span>,</span>
+<span id="cb24-6"><a href="#cb24-6"></a>                          <span class="st">&quot;pulldowns_mutantcontrol.xlsx&quot;</span>, <span class="dv">1</span>, <span class="st">&quot;A2:E16&quot;</span>, <span class="kw">c</span>(<span class="st">&quot;plate&quot;</span>, <span class="st">&quot;aWT&quot;</span>, <span class="st">&quot;bH31A&quot;</span>, <span class="st">&quot;cH31YH62Y&quot;</span>, <span class="st">&quot;ligandgroup&quot;</span>), <span class="st">&quot;MP1&quot;</span></span>
+<span id="cb24-7"><a href="#cb24-7"></a>)</span>
+<span id="cb24-8"><a href="#cb24-8"></a></span>
+<span id="cb24-9"><a href="#cb24-9"></a><span class="co">### note</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a><span class="co">### make sure to select the correct normalization filterselection! MP1/MP2</span></span>
+<span id="cb24-11"><a href="#cb24-11"></a></span>
+<span id="cb24-12"><a href="#cb24-12"></a>pulldown_data.tib &lt;-<span class="st"> </span>pulldown_list.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">filtername =</span> <span class="kw">str_replace_all</span>(value, <span class="st">&quot;./data_pulldowns/&quot;</span>, <span class="dt">replacement =</span> <span class="st">&quot;&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">right_join</span>(., pulldown_coladd)  <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(value, datasetid, range, colnames), read_xlsx))  </span>
+<span id="cb24-13"><a href="#cb24-13"></a></span>
+<span id="cb24-14"><a href="#cb24-14"></a>pulldown_data_norm1 &lt;-<span class="st"> </span>pulldown_data.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(.,collection <span class="op">==</span><span class="st"> &quot;MP2&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., collection, datasetid, data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., (plate <span class="op">!=</span><span class="st"> &quot;unknown&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PHvalues <span class="op">==</span><span class="st"> </span><span class="dv">7</span><span class="op">|</span><span class="st"> </span>plate <span class="op">==</span><span class="st"> &quot;unknown&quot;</span>) <span class="op">&amp;</span><span class="st"> </span>NTF2group <span class="op">==</span><span class="st"> &quot;aWT&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">norm1 =</span> value) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;PHvalues&quot;</span>, <span class="st">&quot;value&quot;</span>, <span class="st">&quot;NTF2group&quot;</span>))</span>
+<span id="cb24-15"><a href="#cb24-15"></a></span>
+<span id="cb24-16"><a href="#cb24-16"></a>pulldown_data_norm2 &lt;-<span class="st"> </span>pulldown_data.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(.,collection <span class="op">==</span><span class="st"> &quot;MP2&quot;</span>)  <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., collection, datasetid, data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., (plate <span class="op">!=</span><span class="st"> &quot;unknown&quot;</span> <span class="op">&amp;</span><span class="st"> </span>PHvalues <span class="op">==</span><span class="st"> </span><span class="dv">7</span><span class="op">|</span><span class="st"> </span>plate <span class="op">==</span><span class="st"> &quot;unknown&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">norm2 =</span> value) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;PHvalues&quot;</span>, <span class="st">&quot;value&quot;</span>))</span>
+<span id="cb24-17"><a href="#cb24-17"></a></span>
+<span id="cb24-18"><a href="#cb24-18"></a>pulldown_data_normalized.tib &lt;-<span class="st"> </span>pulldown_data.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(.,collection <span class="op">==</span><span class="st"> &quot;MP2&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., collection, datasetid, data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., pulldown_data_norm1) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., pulldown_data_norm2) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">value_norm1 =</span> value<span class="op">/</span>norm1, <span class="dt">value_norm2 =</span> value<span class="op">/</span>norm2) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;value&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_longer</span>(., <span class="dt">cols =</span> <span class="kw">c</span>(<span class="st">&quot;value_norm1&quot;</span>, <span class="st">&quot;value_norm2&quot;</span>), <span class="dt">names_to =</span> <span class="st">&quot;normalization&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;value&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;norm1&quot;</span>, <span class="st">&quot;norm2&quot;</span>)) </span>
+<span id="cb24-19"><a href="#cb24-19"></a></span>
+<span id="cb24-20"><a href="#cb24-20"></a></span>
+<span id="cb24-21"><a href="#cb24-21"></a>pulldown_mutantcontrol.tib &lt;-<span class="st">  </span>pulldown_data.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., collection <span class="op">==</span><span class="st"> &quot;MP1&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., data) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;value&quot;</span>, <span class="st">&quot;filtername&quot;</span>, <span class="st">&quot;range&quot;</span>, <span class="st">&quot;colnames&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_longer</span>(., <span class="kw">c</span>(<span class="st">&quot;aWT&quot;</span>, <span class="st">&quot;bH31A&quot;</span>, <span class="st">&quot;cH31YH62Y&quot;</span>), <span class="dt">names_to =</span> <span class="st">&quot;NTF2group&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;value&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">PHvalues =</span> <span class="dv">7</span>, <span class="dt">normalization =</span> <span class="st">&quot;value_norm1&quot;</span>)</span>
+<span id="cb24-22"><a href="#cb24-22"></a></span>
+<span id="cb24-23"><a href="#cb24-23"></a>pulldown_data_normalized_mean.tib &lt;-<span class="st"> </span>pulldown_data_normalized.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">full_join</span>(., pulldown_mutantcontrol.tib) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(., value) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., collection, datasetid, PHvalues, ligandgroup, NTF2group, normalization) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">value_mean =</span> <span class="kw">mean</span>(value, <span class="dt">na.rm=</span><span class="ot">TRUE</span>), <span class="dt">value_sd =</span> <span class="kw">sd</span>(value, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">value_min =</span> value_mean<span class="op">-</span>value_sd, <span class="dt">value_max =</span> value_mean<span class="op">+</span>value_sd) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ungroup</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">PHmod =</span> <span class="kw">case_when</span>(PHvalues <span class="op">==</span><span class="st"> </span><span class="fl">7.4</span> <span class="op">~</span><span class="st"> </span><span class="fl">7.6</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> </span>PHvalues)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., ligandgroup <span class="op">!=</span><span class="st"> &quot;dUBAP2L&quot;</span>)</span></code></pre></div>
+<div id="ip-plots" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.1</span> IP plots<a href="#ip-plots" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>LIGcolor_scale &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>name, <span class="op">~</span>value, <span class="kw">c</span>( <span class="st">&quot;aNONE&quot;</span>, <span class="st">&quot;bUSP&quot;</span>, <span class="st">&quot;cCAP&quot;</span>, <span class="st">&quot;scale&quot;</span>), <span class="kw">c</span>(<span class="st">&quot;#D1D1D1&quot;</span> ,<span class="st">&quot;#B9C9AD&quot;</span>,<span class="st">&quot;#3FC6D8&quot;</span>, <span class="st">&quot;#FFFFFF00&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., name, value) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">deframe</span>()</span>
+<span id="cb25-2"><a href="#cb25-2"></a></span>
+<span id="cb25-3"><a href="#cb25-3"></a>pulldown_plot &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">data =</span> pulldown_data_normalized_mean.tib, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> value_mean, <span class="dt">fill =</span> ligandgroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> pulldown_data_normalized_mean.tib, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">ymin=</span>value_mean, <span class="dt">ymax =</span> value_max, <span class="dt">group =</span> ligandgroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
+<span id="cb25-6"><a href="#cb25-6"></a><span class="st">  </span><span class="co">#geom_point(data = pulldown_data_normalized_mean.tib %&gt;% dplyr::group_by(NTF2group, PHvalues, normalization) %&gt;% dplyr::summarize(., datasetid = unique(datasetid)) %&gt;% dplyr::mutate(., value = 0, method = case_when(PHvalues &gt; 7.5 ~ &quot;aPHwash&quot;, TRUE ~ &quot;bini&quot;)),aes(x = PHvalues, y = value, colour = method), size = 2) +</span></span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="st">  </span><span class="co">#scale_color_grey() +</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;black&quot;</span>)) <span class="op">+</span></span>
+<span id="cb25-9"><a href="#cb25-9"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb25-10"><a href="#cb25-10"></a><span class="st">  </span><span class="co">#scale_x_log10() +</span></span>
+<span id="cb25-11"><a href="#cb25-11"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">minor_breaks =</span> <span class="ot">NULL</span>) <span class="op">+</span></span>
+<span id="cb25-12"><a href="#cb25-12"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>)) <span class="op">+</span></span>
+<span id="cb25-13"><a href="#cb25-13"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">4.5</span>,<span class="dv">9</span>)) <span class="op">+</span></span>
+<span id="cb25-14"><a href="#cb25-14"></a><span class="st">  </span><span class="co">#geom_vline(xintercept = 8, size = 1) +</span></span>
+<span id="cb25-15"><a href="#cb25-15"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb25-16"><a href="#cb25-16"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb25-17"><a href="#cb25-17"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid.major.y =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;grey50&quot;</span>)) <span class="op">+</span><span class="st"> </span><span class="co">#legend.position = &quot;null&quot;</span></span>
+<span id="cb25-18"><a href="#cb25-18"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb25-19"><a href="#cb25-19"></a><span class="st">  </span><span class="kw">facet_grid</span>(normalization<span class="op">+</span>collection <span class="op">~</span><span class="st"> </span>NTF2group, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb25-20"><a href="#cb25-20"></a><span class="kw">print</span>(pulldown_plot)</span></code></pre></div>
+<p><img src="index_files/figure-html/PullDownPlot-1.png" width="672" /></p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./pulldown_plot.jpeg&quot;</span>, pulldown_plot,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">75</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./pulldown_plot.ps&quot;</span>, pulldown_plot,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">75</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="IPplotCaption" class="figure-box">
+<p>Relative intensities of IPs versus pH.</p>
+</div>
+</div>
+<div id="ip-stats" class="section level2 hasAnchor">
+<h2><span class="header-section-number">3.2</span> IP stats<a href="#ip-stats" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>filter_outlier_f &lt;-<span class="st"> </span><span class="cf">function</span>(df, outlier){</span>
+<span id="cb27-2"><a href="#cb27-2"></a>df_out &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., outlier) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">filterme =</span> <span class="kw">case_when</span>(is.outlier <span class="op">==</span><span class="st"> &quot;TRUE&quot;</span> <span class="op">&amp;</span><span class="st"> </span>is.extreme <span class="op">==</span><span class="st"> &quot;TRUE&quot;</span> <span class="op">~</span><span class="st"> &quot;YES&quot;</span>, <span class="ot">TRUE</span> <span class="op">~</span><span class="st"> &quot;NO&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., filterme <span class="op">==</span><span class="st"> &quot;NO&quot;</span>)</span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="kw">return</span>(df_out)</span>
+<span id="cb27-4"><a href="#cb27-4"></a>}</span>
+<span id="cb27-5"><a href="#cb27-5"></a></span>
+<span id="cb27-6"><a href="#cb27-6"></a>statix_data_f &lt;-<span class="st"> </span><span class="cf">function</span>(df){</span>
+<span id="cb27-7"><a href="#cb27-7"></a>  df_out &lt;-<span class="st"> </span>df <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;datasetid&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">group =</span> <span class="kw">as.factor</span>(PHvalues)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;PHvalues&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., ligandgroup)</span>
+<span id="cb27-8"><a href="#cb27-8"></a>  <span class="kw">return</span>(df_out)</span>
+<span id="cb27-9"><a href="#cb27-9"></a>}</span>
+<span id="cb27-10"><a href="#cb27-10"></a></span>
+<span id="cb27-11"><a href="#cb27-11"></a>pulldown_data_prestats.tib &lt;-<span class="st"> </span>pulldown_data_normalized.tib <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">full_join</span>(., pulldown_mutantcontrol.tib) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>(., value) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;plate&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., collection, NTF2group, normalization) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">nest</span>() <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">data_stats =</span> purrr<span class="op">::</span><span class="kw">pmap</span>(<span class="kw">list</span>(data), statix_data_f ))</span>
+<span id="cb27-12"><a href="#cb27-12"></a></span>
+<span id="cb27-13"><a href="#cb27-13"></a><span class="co"># %&gt;% dplyr::mutate(., data_gate = purrr::map(data, ~dplyr::group_by(., labelcolor)))</span></span>
+<span id="cb27-14"><a href="#cb27-14"></a>pulldown_data_anova.stats &lt;-<span class="st"> </span>pulldown_data_prestats.tib <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., collection <span class="op">==</span><span class="st"> &quot;MP2&quot;</span>, normalization <span class="op">==</span><span class="st"> &quot;value_norm1&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">outliers =</span> purrr<span class="op">::</span><span class="kw">map</span>(data_stats, <span class="op">~</span><span class="kw">identify_outliers</span>(., value)), <span class="dt">tukeytest =</span>  purrr<span class="op">::</span><span class="kw">map</span>(data_stats, <span class="op">~</span><span class="kw">tukey_hsd</span>(., value <span class="op">~</span><span class="st"> </span>group)), <span class="dt">kruskaltest =</span>  purrr<span class="op">::</span><span class="kw">map</span>(data_stats, <span class="op">~</span><span class="kw">kruskal_test</span>(., value <span class="op">~</span><span class="st"> </span>group)))</span>
+<span id="cb27-15"><a href="#cb27-15"></a></span>
+<span id="cb27-16"><a href="#cb27-16"></a>p_label_y &lt;-<span class="st"> </span><span class="kw">tribble</span>(<span class="op">~</span>groupid, <span class="op">~</span>value,</span>
+<span id="cb27-17"><a href="#cb27-17"></a>                     <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">2</span>), <span class="kw">c</span>(<span class="fl">1.2</span>, <span class="fl">1.3</span>))</span>
+<span id="cb27-18"><a href="#cb27-18"></a>p_label_y &lt;-<span class="st"> </span>p_label_y <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="kw">c</span>(<span class="st">&quot;groupid&quot;</span>, <span class="st">&quot;value&quot;</span>))</span>
+<span id="cb27-19"><a href="#cb27-19"></a></span>
+<span id="cb27-20"><a href="#cb27-20"></a>pulldown_data_anova_toPlot &lt;-<span class="st"> </span>pulldown_data_anova.stats <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;data&quot;</span>, <span class="st">&quot;data_stats&quot;</span>, <span class="st">&quot;outliers&quot;</span>, <span class="st">&quot;kruskaltest&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">unnest</span>(., <span class="kw">c</span>(<span class="st">&quot;tukeytest&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">filter</span>(., p.adj.signif <span class="op">!=</span><span class="st"> &quot;ns&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="kw">c</span>(<span class="st">&quot;collection&quot;</span>, <span class="st">&quot;NTF2group&quot;</span>, <span class="st">&quot;normalization&quot;</span>, <span class="st">&quot;ligandgroup&quot;</span>, <span class="st">&quot;group1&quot;</span>, <span class="st">&quot;group2&quot;</span>, <span class="st">&quot;p.adj.signif&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">groupid =</span> <span class="kw">row_number</span>()) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">pivot_longer</span>(., <span class="dt">cols =</span> <span class="kw">c</span>(<span class="st">&quot;group1&quot;</span>, <span class="st">&quot;group2&quot;</span>), <span class="dt">names_to =</span> <span class="st">&quot;groups&quot;</span>, <span class="dt">values_to =</span> <span class="st">&quot;PHvalues&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">select</span>(., <span class="op">!</span><span class="kw">c</span>(<span class="st">&quot;groups&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">left_join</span>(., p_label_y) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(., <span class="dt">PHvalues =</span> <span class="kw">as.numeric</span>(PHvalues))</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>pulldown_plot2 &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a><span class="st">  </span><span class="kw">geom_col</span>(<span class="dt">data =</span> pulldown_data_normalized_mean.tib, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> value_mean, <span class="dt">fill =</span> ligandgroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">colour =</span> <span class="st">&quot;black&quot;</span>) <span class="op">+</span></span>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="st">  </span><span class="kw">geom_errorbar</span>(<span class="dt">data =</span> pulldown_data_normalized_mean.tib, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">ymin=</span>value_mean, <span class="dt">ymax =</span> value_max, <span class="dt">group =</span> ligandgroup), <span class="dt">position =</span> <span class="st">&quot;dodge&quot;</span>, <span class="dt">size =</span> <span class="fl">0.5</span>) <span class="op">+</span></span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">data =</span> pulldown_data_anova_toPlot, <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> value, <span class="dt">group =</span> groupid, <span class="dt">colour =</span> ligandgroup), <span class="dt">size =</span> <span class="fl">0.25</span>) <span class="op">+</span></span>
+<span id="cb28-5"><a href="#cb28-5"></a><span class="st">  </span><span class="kw">geom_text</span>(<span class="dt">data =</span> pulldown_data_anova_toPlot <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">group_by</span>(., collection, NTF2group, normalization, groupid) <span class="op">%&gt;%</span><span class="st"> </span>dplyr<span class="op">::</span><span class="kw">summarize</span>(., <span class="dt">PHvalues =</span> <span class="kw">mean</span>(PHvalues), <span class="dt">value =</span> <span class="kw">mean</span>(value), <span class="dt">p.adj.signif =</span> <span class="kw">unique</span>(p.adj.signif)), <span class="kw">aes</span>(<span class="dt">x =</span> PHvalues, <span class="dt">y =</span> value, <span class="dt">group =</span> groupid, <span class="dt">label =</span> p.adj.signif ), <span class="dt">size =</span> <span class="dv">2</span>) <span class="op">+</span></span>
+<span id="cb28-6"><a href="#cb28-6"></a><span class="st">  </span><span class="co">#geom_point(data = pulldown_data_normalized_mean.tib %&gt;% dplyr::group_by(NTF2group, PHvalues, normalization) %&gt;% dplyr::summarize(., datasetid = unique(datasetid)) %&gt;% dplyr::mutate(., value = 0, method = case_when(PHvalues &gt; 7.5 ~ &quot;aPHwash&quot;, TRUE ~ &quot;bini&quot;)),aes(x = PHvalues, y = value, colour = method), size = 2) +</span></span>
+<span id="cb28-7"><a href="#cb28-7"></a><span class="st">  </span><span class="co">#scale_color_grey() +</span></span>
+<span id="cb28-8"><a href="#cb28-8"></a><span class="st">  </span><span class="kw">scale_color_manual</span>(<span class="dt">values =</span> <span class="kw">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;black&quot;</span>)) <span class="op">+</span></span>
+<span id="cb28-9"><a href="#cb28-9"></a><span class="st">  </span><span class="kw">scale_fill_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb28-10"><a href="#cb28-10"></a><span class="st">  </span><span class="kw">scale_colour_manual</span>(<span class="dt">values =</span> LIGcolor_scale) <span class="op">+</span></span>
+<span id="cb28-11"><a href="#cb28-11"></a><span class="st">  </span><span class="co">#scale_x_log10() +</span></span>
+<span id="cb28-12"><a href="#cb28-12"></a><span class="st">  </span><span class="kw">scale_y_continuous</span>(<span class="dt">minor_breaks =</span> <span class="ot">NULL</span>) <span class="op">+</span></span>
+<span id="cb28-13"><a href="#cb28-13"></a><span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">5</span>,<span class="dv">6</span>,<span class="dv">7</span>,<span class="dv">8</span>,<span class="dv">9</span>)) <span class="op">+</span></span>
+<span id="cb28-14"><a href="#cb28-14"></a><span class="st">  </span><span class="kw">coord_cartesian</span>(<span class="dt">xlim =</span> <span class="kw">c</span>(<span class="fl">4.5</span>,<span class="dv">9</span>)) <span class="op">+</span></span>
+<span id="cb28-15"><a href="#cb28-15"></a><span class="st">  </span><span class="co">#geom_vline(xintercept = 8, size = 1) +</span></span>
+<span id="cb28-16"><a href="#cb28-16"></a><span class="st">  </span><span class="co">#coord_cartesian() +</span></span>
+<span id="cb28-17"><a href="#cb28-17"></a><span class="st">  </span><span class="kw">theme_light</span>() <span class="op">+</span></span>
+<span id="cb28-18"><a href="#cb28-18"></a><span class="st">  </span><span class="kw">theme</span>(<span class="dt">panel.grid.major.y =</span> <span class="kw">element_line</span>(<span class="dt">colour =</span> <span class="st">&quot;grey50&quot;</span>)) <span class="op">+</span><span class="st"> </span><span class="co">#legend.position = &quot;null&quot;</span></span>
+<span id="cb28-19"><a href="#cb28-19"></a><span class="st">  </span><span class="co">#coord_flip(xlim = c(4,8), ylim = c(20,80)) +</span></span>
+<span id="cb28-20"><a href="#cb28-20"></a><span class="st">  </span><span class="kw">facet_grid</span>(normalization<span class="op">+</span>collection <span class="op">~</span><span class="st"> </span>NTF2group, <span class="dt">scales =</span> <span class="st">&quot;free_y&quot;</span>)</span>
+<span id="cb28-21"><a href="#cb28-21"></a><span class="kw">print</span>(pulldown_plot2)</span></code></pre></div>
+<p><img src="index_files/figure-html/PullDownPlot2-1.png" width="672" /></p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">ggsave</span>(<span class="st">&quot;./pulldown_plot2.jpeg&quot;</span>, pulldown_plot2,  <span class="dt">device=</span><span class="st">&quot;jpeg&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">75</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="kw">ggsave</span>(<span class="st">&quot;./pulldown_plot2.ps&quot;</span>, pulldown_plot2,  <span class="dt">device=</span><span class="st">&quot;ps&quot;</span>, <span class="dt">width =</span> <span class="dv">150</span>, <span class="dt">height =</span> <span class="dv">75</span>, <span class="dt">units =</span> <span class="kw">c</span>(<span class="st">&quot;mm&quot;</span>))</span></code></pre></div>
+<div id="IPstatsPlotCaption" class="figure-box">
+<p>Relative intensities of IPs versus pH. plus ANOVA.</p>
+</div>
+<p>Plots were saved as postscript files, and edited into publication-quality figures using Adobe Illustrator.</p>
+<p>The bookdown document was created based on <a href="https://bookdown.org/yihui/bookdown/">bookdown</a>, and <a href="https://github.com/bblodfon/rtemps">rtemps</a>.</p>
+<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": false,
+"twitter": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": false
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>
